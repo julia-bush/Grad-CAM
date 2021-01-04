@@ -14,5 +14,5 @@ python 3.7 (later versions of python are not supported by TensorFlow at the time
 
 python src/main.py examples/
 
-The processed images will be placed in the "data/predictions/examples" folder.
+The processed images will be placed in the "predictions/examples" folder.
 
