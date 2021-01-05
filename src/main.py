@@ -75,12 +75,12 @@ for filename in os.listdir(test_dir):
     # cv2.imwrite("gradcam.jpg", cam)
     cv2.imwrite(pred_dir + Path(filename).stem + "_gradcam.jpg", cam)
 
-    register_gradient()
-    guided_model = modify_backprop(model, "GuidedBackProp")
-    saliency_fn = compile_saliency_function(guided_model)
-    saliency = saliency_fn([preprocessed_input, 0])
-    gradcam = saliency[0] * heatmap[..., np.newaxis]
-    # cv2.imwrite("guided_gradcam.jpg", deprocess_image(gradcam))
-    cv2.imwrite(
-        pred_dir + Path(filename).stem + "_guided_gradcam.jpg", deprocess_image(gradcam)
-    )
+    # register_gradient()
+    # guided_model = modify_backprop(model, "GuidedBackProp")
+    # saliency_fn = compile_saliency_function(guided_model)
+    # saliency = saliency_fn([preprocessed_input, 0])
+    # gradcam = saliency[0] * heatmap[..., np.newaxis]
+    # # cv2.imwrite("guided_gradcam.jpg", deprocess_image(gradcam))
+    # cv2.imwrite(
+    #     pred_dir + Path(filename).stem + "_guided_gradcam.jpg", deprocess_image(gradcam)
+    # )
