@@ -1,28 +1,17 @@
-from tensorflow.keras.applications.vgg16 import (
-    VGG16,
-    preprocess_input,
-    decode_predictions,
-)
-from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing import image
-from tensorflow.python.keras.layers.core import Lambda
-from tensorflow.keras.models import Sequential
-from tensorflow.python.framework import ops
-import tensorflow.keras.backend as K
-import tensorflow as tf
-import numpy as np
-import tensorflow.keras
-import sys
-import cv2
 import os
+import sys
 from pathlib import Path
 
-from tensorflow.compat.v1.keras.backend import set_session
-
-from img_process import load_image, deprocess_image
-from utils import register_gradient, modify_backprop, compile_saliency_function
+import cv2
+import numpy as np
+import tensorflow as tf
 from gradcam import grad_cam
-
+from img_process import load_image
+from tensorflow.compat.v1.keras.backend import set_session
+from tensorflow.keras.applications.vgg16 import (
+    VGG16,
+    decode_predictions,
+)
 
 # cheat no.1
 physical_devices = tf.config.experimental.list_physical_devices("GPU")

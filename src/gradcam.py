@@ -1,20 +1,9 @@
-from tensorflow.keras.applications.vgg16 import (
-    VGG16,
-    preprocess_input,
-    decode_predictions,
-)
-from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing import image
-from tensorflow.python.keras.layers.core import Lambda
-from tensorflow.keras.models import Sequential
-from tensorflow.python.framework import ops
-import tensorflow.keras.backend as K
-import tensorflow as tf
-import numpy as np
-import tensorflow.keras
-import sys
 import cv2
-
+import numpy as np
+import tensorflow as tf
+import tensorflow.keras.backend as K
+from tensorflow.keras.models import Model
+from tensorflow.python.keras.layers.core import Lambda
 from utils import normalise
 
 
