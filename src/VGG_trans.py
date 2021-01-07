@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
@@ -17,10 +19,10 @@ def run():
     set_session(sess)
 
     n_classes = 2
-    img_size = (224, 224, 3)
+    img_size = (227, 227, 3)
     # print("image size = ", img_size[:-1])
 
-    train_dir = Path.cwd().parent / "data" / "defects"
+    train_dir = Path.cwd().parent / "data" / "concrete"
     model_dir = Path.cwd().parent / "models"
     Path(model_dir).mkdir(parents=True, exist_ok=True)
 
@@ -52,9 +54,9 @@ def run():
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
 
     # Change the batchsize according to your system RAM
-    train_batchsize = 32
-    val_batchsize = 16
-    epochs = 1
+    train_batchsize = 2
+    val_batchsize = 1
+    epochs = 3
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -83,8 +85,8 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / "model-crack.h5", verbose=1, save_weights_only=True
-        ),
+            model_dir / "VGG16-concrete.hdf5", verbose=1, save_weights_only=True
+        )
     ]
 
     history = model.fit(
@@ -96,6 +98,31 @@ def run():
         validation_steps=800,
         verbose=1,
     )
+
+    predictions = model.predict(
+        validation_generator,
+        steps=validation_generator.samples / validation_generator.batch_size,
+        verbose=1,
+    )
+
+    # Show validation results
+    for i in range(validation_generator.n):
+        pred_class = np.argmax(predictions[i])
+        pred_label = list(validation_generator.class_indices.keys())[pred_class]
+
+        title = "Prediction : {}, confidence : {:.3f}".format(
+            pred_label, predictions[i][pred_class]
+        )
+
+        X_val, y_val = next(validation_generator)
+
+        # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
+        plt.figure(figsize=[7, 7])
+        plt.axis("off")
+        plt.title(title)
+        # plt.imshow(original)
+        plt.imshow(np.squeeze(X_val, axis=0))
+        plt.show()
 
 
 if __name__ == "__main__":
