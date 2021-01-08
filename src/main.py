@@ -23,8 +23,11 @@ set_session(sess)
 # cheat no.2
 tf.compat.v1.disable_eager_execution()
 
-test_dir = sys.argv[1]
-pred_dir = "predictions/" + Path(test_dir).parts[-1] + "/"
+# test_dir = sys.argv[1]
+test_dataset_name = "test_concrete"
+dataset_name = "concrete"
+test_dir = Path.cwd().parent / "data" / dataset_name
+pred_dir = Path.cwd().parent / "predictions/" + test_dataset_name + "/"
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
 model = VGG16(weights="imagenet")

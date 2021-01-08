@@ -22,9 +22,12 @@ def run():
     img_size = (227, 227, 3)
     # print("image size = ", img_size[:-1])
 
-    train_dir = Path.cwd().parent / "data" / "concrete"
+    dataset_name = "concrete"
+    train_dir = Path.cwd().parent / "data" / dataset_name
     model_dir = Path.cwd().parent / "models"
     Path(model_dir).mkdir(parents=True, exist_ok=True)
+    pred_dir = Path.cwd().parent / "predictions/" + dataset_name + "/"
+    Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
@@ -85,7 +88,7 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / "VGG16-concrete.hdf5", verbose=1, save_weights_only=True
+            model_dir / f"VGG16-{dataset_name}.hdf5", verbose=1, save_weights_only=True
         )
     ]
 
