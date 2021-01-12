@@ -24,17 +24,16 @@ set_session(sess)
 tf.compat.v1.disable_eager_execution()
 
 # test_dir = sys.argv[1]
-test_dataset_name = "test_concrete"
-dataset_name = "concrete"
+dataset_name = "viaducts"
 test_dir = Path.cwd().parent / "data" / dataset_name
-pred_dir = Path.cwd().parent / "predictions/" + test_dataset_name + "/"
+pred_dir = Path.cwd().parent / "predictions" / dataset_name
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
 model = VGG16(weights="imagenet")
 
 for filename in os.listdir(test_dir):
 
-    preprocessed_input = load_image(test_dir + filename)
+    preprocessed_input = load_image(f"{test_dir}/{filename}")
     predictions = model.predict(preprocessed_input)
 
     print("File: " + filename)
@@ -76,7 +75,7 @@ for filename in os.listdir(test_dir):
         cv2.LINE_AA,
     )
     # cv2.imwrite("gradcam.jpg", cam)
-    cv2.imwrite(pred_dir + Path(filename).stem + "_gradcam.jpg", cam)
+    cv2.imwrite(f"{pred_dir}/{Path(filename).stem}_gradcam.jpg", cam)
 
     # register_gradient()
     # guided_model = modify_backprop(model, "GuidedBackProp")
