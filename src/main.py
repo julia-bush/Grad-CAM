@@ -38,8 +38,10 @@ tf.compat.v1.disable_eager_execution()
 
 # test_dir = sys.argv[1]
 dataset_name = "viaducts"
-test_dir = Path.cwd().parent / "data" / dataset_name
-pred_dir = Path.cwd().parent / "predictions" / dataset_name
+# test_dir = Path.cwd().parent / "data" / dataset_name
+# pred_dir = Path.cwd().parent / "predictions" / dataset_name
+test_dir = Path.cwd() / "data" / dataset_name
+pred_dir = Path.cwd() / "predictions" / dataset_name
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
 model = VGG16(weights="imagenet")
