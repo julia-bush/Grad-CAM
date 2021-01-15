@@ -92,8 +92,15 @@ def run():
 
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
-    hist = model.fit(steps_per_epoch=100, generator=train_generator, validation_data=validation_generator, validation_steps=10,
-                               epochs=epochs, callbacks=[checkpoint, early])
+    history = model.fit(
+        x=train_generator,
+        steps_per_epoch=train_generator.samples // train_generator.batch_size,
+        epochs=epochs,
+        callbacks=[checkpoint, early],
+        validation_data=validation_generator,
+        validation_steps=10,
+        verbose=1,
+    )
 
     # plt.plot(hist.history["acc"])
     # plt.plot(hist.history['val_acc'])
