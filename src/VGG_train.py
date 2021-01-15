@@ -21,8 +21,8 @@ def run():
     # TODO: feed n_classes into model layer parameters
     n_classes = 2
     img_size = (224, 224, 3)
-    train_batchsize = 32
-    val_batchsize = 32
+    train_batchsize = 50
+    val_batchsize = 50
     epochs = 3
 
     dataset_name = "concrete"
