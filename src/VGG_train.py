@@ -21,7 +21,7 @@ def run():
     # TODO: feed n_classes into model layer parameters
     n_classes = 2
     img_size = (224, 224, 3)
-    train_batchsize = 50
+    train_batchsize = 100
     val_batchsize = 50
     epochs = 3
 
