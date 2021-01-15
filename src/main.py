@@ -13,35 +13,22 @@ from tensorflow.keras.applications.vgg16 import (
     decode_predictions,
 )
 
-# TODO: set this up for two GPUs
-# cheat no.1
+
+# GPU config works for both one or two GPUs
 physical_devices = tf.config.experimental.list_physical_devices("GPU")
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
-
-# # for one GPU
-# config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
-# sess = tf.compat.v1.Session(config=config)
-
-# # for two GPUs #1
-# config = tf.ConfigProto()
-# config.gpu_options.allow_growth=True
-# sess = tf.Session(config=config)
-
-# for two GPUs #2
 config = tf.compat.v1.ConfigProto()
 sess = tf.compat.v1.Session
-
 set_session(sess)
 
-# cheat no.2
 tf.compat.v1.disable_eager_execution()
 
 # test_dir = sys.argv[1]
 dataset_name = "viaducts"
 # test_dir = Path.cwd().parent / "data" / dataset_name
 # pred_dir = Path.cwd().parent / "predictions" / dataset_name
-test_dir = Path.cwd() / "data" / dataset_name
-pred_dir = Path.cwd() / "predictions" / dataset_name
+test_dir = Path.cwd().parent / "data" / dataset_name
+pred_dir = Path.cwd().parent / "predictions" / dataset_name
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
 model = VGG16(weights="imagenet")
