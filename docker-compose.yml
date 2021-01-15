@@ -3,6 +3,5 @@ services:
     build: .
     volume:
       # - data:/app/data
-      # - /home/ezxjb3/repos/Grad-CAM: /app/
-      - .: /app/
+      - /home/ezxjb3/repos/Grad-CAM:/app/
     entrypoint: ["python", "main.py"]

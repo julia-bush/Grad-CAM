@@ -5,4 +5,4 @@ RUN pip3 install --upgrade pip
 WORKDIR /app/
 COPY requirements.txt .
 RUN pip3 install --upgrade -r requirements.txt
-COPY src/ src/
+# COPY src/ src/
