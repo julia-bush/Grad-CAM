@@ -21,9 +21,9 @@ def run():
     # TODO: feed n_classes into model layer parameters
     n_classes = 2
     img_size = (224, 224, 3)
-    train_batchsize = 100
-    val_batchsize = 50
-    epochs = 3
+    train_batchsize = 32
+    val_batchsize = 32
+    epochs = 100
 
     dataset_name = "concrete"
     train_dir = Path.cwd().parent / "data" / dataset_name
@@ -112,34 +112,34 @@ def run():
     # plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
     # plt.show()
 
-    predictions = model.predict(
-        validation_generator,
-        steps=validation_generator.samples / validation_generator.batch_size,
-        verbose=1,
-    )
+    # predictions = model.predict(
+    #     validation_generator,
+    #     steps=validation_generator.samples / validation_generator.batch_size,
+    #     verbose=1,
+    # )
 
-    # Save a sample of validation results
-    sample_no = 5
-    sample_rate = validation_generator.n // sample_no
-    for i in range(validation_generator.n):
-        if i % sample_rate == 0:
-            pred_class = np.argmax(predictions[i])
-            pred_label = list(validation_generator.class_indices.keys())[pred_class]
-
-            title = "Prediction : {}, confidence : {:.3f}".format(
-                pred_label, predictions[i][pred_class]
-            )
-
-            X_val, y_val = next(validation_generator)
-
-            # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
-            plt.figure(figsize=[7, 7])
-            plt.axis("off")
-            plt.title(title)
-            # plt.imshow(original)
-            plt.imshow(np.squeeze(X_val, axis=0))
-            plt.savefig(f"{pred_dir}/{i}.jpg")
-            # plt.show()
+    # # Save a sample of validation results
+    # sample_no = 5
+    # sample_rate = validation_generator.n // sample_no
+    # for i in range(validation_generator.n):
+    #     if i % sample_rate == 0:
+    #         pred_class = np.argmax(predictions[i])
+    #         pred_label = list(validation_generator.class_indices.keys())[pred_class]
+    #
+    #         title = "Prediction : {}, confidence : {:.3f}".format(
+    #             pred_label, predictions[i][pred_class]
+    #         )
+    #
+    #         X_val, y_val = next(validation_generator)
+    #
+    #         # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
+    #         plt.figure(figsize=[7, 7])
+    #         plt.axis("off")
+    #         plt.title(title)
+    #         # plt.imshow(original)
+    #         plt.imshow(np.squeeze(X_val, axis=0))
+    #         plt.savefig(f"{pred_dir}/{i}.jpg")
+    #         # plt.show()
 
 
 if __name__ == "__main__":
