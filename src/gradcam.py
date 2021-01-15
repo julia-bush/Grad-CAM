@@ -30,7 +30,7 @@ def grad_cam(model, image, category_index, layer_name):
         model.output
     )
     model = Model(inputs=model.input, outputs=x)
-    model.summary()
+    # model.summary()
     loss = K.sum(model.output)
     conv_output = [l for l in model.layers if l.name is layer_name][0].output
     grads = normalise(_compute_gradients(loss, [conv_output])[0])
