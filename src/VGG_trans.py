@@ -57,7 +57,7 @@ def run():
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
 
     # Change the batchsize according to your system RAM
-    train_batchsize = 2
+    train_batchsize = 50
     val_batchsize = 1
     epochs = 3
 
@@ -109,23 +109,27 @@ def run():
     )
 
     # Show validation results
+    sample_no = 100
+    sample_rate = validation_generator.n // sample_no
     for i in range(validation_generator.n):
-        pred_class = np.argmax(predictions[i])
-        pred_label = list(validation_generator.class_indices.keys())[pred_class]
+        if i % sample_rate == 0:
+            pred_class = np.argmax(predictions[i])
+            pred_label = list(validation_generator.class_indices.keys())[pred_class]
 
-        title = "Prediction : {}, confidence : {:.3f}".format(
-            pred_label, predictions[i][pred_class]
-        )
+            title = "Prediction : {}, confidence : {:.3f}".format(
+                pred_label, predictions[i][pred_class]
+            )
 
-        X_val, y_val = next(validation_generator)
+            X_val, y_val = next(validation_generator)
 
-        # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
-        plt.figure(figsize=[7, 7])
-        plt.axis("off")
-        plt.title(title)
-        # plt.imshow(original)
-        plt.imshow(np.squeeze(X_val, axis=0))
-        plt.show()
+            # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
+            plt.figure(figsize=[7, 7])
+            plt.axis("off")
+            plt.title(title)
+            # plt.imshow(original)
+            plt.imshow(np.squeeze(X_val, axis=0))
+            plt.savefig(f"{pred_dir}/{i}.jpg")
+            # plt.show()
 
 
 if __name__ == "__main__":
