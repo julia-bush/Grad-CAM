@@ -92,16 +92,6 @@ def run():
 
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
-    # history = model.fit(
-    #     x=train_generator,
-    #     steps_per_epoch=train_generator.samples // train_generator.batch_size,
-    #     epochs=epochs,
-    #     callbacks=[checkpoint, early],
-    #     validation_data=validation_generator,
-    #     validation_steps=10,
-    #     verbose=1,
-    # )
-
     history = model.fit_generator(
         generator=train_generator,
         steps_per_epoch=train_generator.samples // train_generator.batch_size,

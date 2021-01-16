@@ -11,11 +11,11 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 
 
 def run():
-    # cheat no.1
+    # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
-    config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
-    sess = tf.compat.v1.Session(config=config)
+    config = tf.compat.v1.ConfigProto()
+    sess = tf.compat.v1.Session
     set_session(sess)
 
     n_classes = 2
@@ -26,7 +26,7 @@ def run():
     train_dir = Path.cwd().parent / "data" / dataset_name
     model_dir = Path.cwd().parent / "models"
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    pred_dir = Path.cwd().parent / "predictions/" + dataset_name + "/"
+    pred_dir = Path.cwd().parent / "predictions/" / dataset_name
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
     vgg_conv = tf.keras.applications.VGG16(
@@ -34,18 +34,17 @@ def run():
         weights="imagenet",
         input_tensor=None,
         input_shape=img_size,
-        pooling=None,
-        classes=1000,
-        classifier_activation="softmax",
+        pooling=None
     )
-
-    for layer in vgg_conv.layers[:]:
-        layer.trainable = False
 
     print(vgg_conv.summary())
 
     model = Sequential()
-    model.add(vgg_conv)
+
+    for layer in vgg_conv.layers[:]:
+        layer.trainable = False
+        model.add(layer)
+
     model.add(Flatten())
     model.add(Dense(128, activation="relu"))
     model.add(Dropout(0.5))
@@ -57,9 +56,9 @@ def run():
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
 
     # Change the batchsize according to your system RAM
-    train_batchsize = 50
-    val_batchsize = 1
-    epochs = 3
+    train_batchsize = 32
+    val_batchsize = 32
+    epochs = 100
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -92,14 +91,14 @@ def run():
         )
     ]
 
-    history = model.fit(
-        train_generator,
+    history = model.fit_generator(
+        generator=train_generator,
         steps_per_epoch=train_generator.samples // train_generator.batch_size,
         epochs=epochs,
+        verbose=1,
         callbacks=callbacks,
         validation_data=validation_generator,
-        validation_steps=800,
-        verbose=1,
+        validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
     predictions = model.predict(
