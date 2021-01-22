@@ -84,7 +84,7 @@ def run():
 
     model.compile(
         loss="categorical_crossentropy",
-        optimizer=optimizers.RMSprop(lr=1e-4),
+        optimizer=optimizers.Adam(lr=1e-5),
         metrics=["acc"],
     )
 
