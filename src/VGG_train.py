@@ -1,13 +1,11 @@
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
 from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from tensorflow.keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPool2D
+from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
 
 
 def run():
@@ -81,7 +79,7 @@ def run():
 
     model.compile(
         loss="categorical_crossentropy",
-        optimizer=optimizers.Adam(lr=0.001),
+        optimizer=optimizers.Adam(lr=0.001),  #
         metrics=["accuracy"],
     )
 
@@ -102,44 +100,33 @@ def run():
         validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
-    # plt.plot(hist.history["acc"])
-    # plt.plot(hist.history['val_acc'])
-    # plt.plot(hist.history['loss'])
-    # plt.plot(hist.history['val_loss'])
-    # plt.title("model accuracy")
-    # plt.ylabel("Accuracy")
-    # plt.xlabel("Epoch")
-    # plt.legend(["Accuracy", "Validation Accuracy", "loss", "Validation Loss"])
-    # plt.show()
 
-    # predictions = model.predict(
-    #     validation_generator,
-    #     steps=validation_generator.samples / validation_generator.batch_size,
-    #     verbose=1,
-    # )
-
-    # # Save a sample of validation results
-    # sample_no = 5
-    # sample_rate = validation_generator.n // sample_no
-    # for i in range(validation_generator.n):
-    #     if i % sample_rate == 0:
-    #         pred_class = np.argmax(predictions[i])
-    #         pred_label = list(validation_generator.class_indices.keys())[pred_class]
-    #
-    #         title = "Prediction : {}, confidence : {:.3f}".format(
-    #             pred_label, predictions[i][pred_class]
-    #         )
-    #
-    #         X_val, y_val = next(validation_generator)
-    #
-    #         # original = load_img('{}/{}'.format(validation_dir, fnames[errors[i]]))
-    #         plt.figure(figsize=[7, 7])
-    #         plt.axis("off")
-    #         plt.title(title)
-    #         # plt.imshow(original)
-    #         plt.imshow(np.squeeze(X_val, axis=0))
-    #         plt.savefig(f"{pred_dir}/{i}.jpg")
-    #         # plt.show()
+    # Save a sample of validation results from random batches:
+    sample_no = 10  # sample_no >= number of batches
+    num_batches = validation_generator.n // val_batchsize
+    batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
+    print(f"batch_sample_idx = {batch_sample_idx}")
+    for X_val, y_val in validation_generator:
+        print(f"validation_generator.batch_index = {validation_generator.batch_index}")
+        if validation_generator.batch_index in batch_sample_idx:
+            random_sample_idx = np.random.randint(low=0, high=val_batchsize)
+            print(f"random_sample_idx = {random_sample_idx}")
+            X_val_sample_img = X_val[random_sample_idx, :]
+            random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
+            print(f"random_sample_pred_idx = {random_sample_pred_idx}")
+            pred_class = np.argmax(predictions[random_sample_pred_idx])
+            pred_label = list(validation_generator.class_indices.keys())[pred_class]
+            title = "Prediction : {}, confidence : {:.3f}".format(
+                pred_label, predictions[random_sample_pred_idx][pred_class]
+            )
+            plt.figure(figsize=[7, 7])
+            plt.axis("off")
+            plt.title(title)
+            plt.imshow(X_val_sample_img)
+            plt.savefig(f"{pred_dir}/{random_sample_pred_idx}.jpg")
+            plt.close()
+        if validation_generator.batch_index == num_batches-1:
+            break
 
 
 if __name__ == "__main__":
