@@ -103,8 +103,7 @@ def run():
         epochs=epochs,
         verbose=1,
         callbacks=callbacks,
-        validation_data=validation_generator,
-        validation_steps=validation_generator.samples // validation_generator.batch_size
+        validation_data=validation_generator
     )
 
     predictions = model.predict(
