@@ -19,7 +19,7 @@ def run():
     set_session(sess)
 
     n_classes = 2
-    img_size = (227, 227, 3)
+    img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
     dataset_name = "concrete"
