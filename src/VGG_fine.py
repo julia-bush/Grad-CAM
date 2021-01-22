@@ -22,12 +22,16 @@ def run():
     img_size = (224, 224, 3)
 
     dataset_name = "concrete"
-    train_dir = Path.cwd().parent / "data" / dataset_name
-    model_dir = Path.cwd().parent / "models"
+    # train_dir = Path.cwd().parent / "data" / dataset_name
+    # model_dir = Path.cwd().parent / "models"
+    train_dir = Path.cwd() / "data" / dataset_name
+    model_dir = Path.cwd() / "models"
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    pred_dir = Path.cwd().parent / "predictions/" / dataset_name
+    # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
+    pred_dir = Path.cwd() / "predictions/" / dataset_name / "fine/"
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
-    model_weights = f"{Path.cwd().parent}/models/VGG16-concrete.hdf5"
+    # model_weights = f"{Path.cwd().parent}/models/VGG16-concrete.hdf5"
+    model_weights = f"{Path.cwd()}/models/VGG16-concrete.hdf5"
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
