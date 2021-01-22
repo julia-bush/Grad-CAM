@@ -114,15 +114,11 @@ def run():
     sample_no = 10  # sample_no >= number of batches
     num_batches = validation_generator.n // val_batchsize
     batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
-    print(f"batch_sample_idx = {batch_sample_idx}")
     for X_val, y_val in validation_generator:
-        print(f"validation_generator.batch_index = {validation_generator.batch_index}")
         if validation_generator.batch_index in batch_sample_idx:
             random_sample_idx = np.random.randint(low=0, high=val_batchsize)
-            print(f"random_sample_idx = {random_sample_idx}")
             X_val_sample_img = X_val[random_sample_idx, :]
             random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
-            print(f"random_sample_pred_idx = {random_sample_pred_idx}")
             pred_class = np.argmax(predictions[random_sample_pred_idx])
             pred_label = list(validation_generator.class_indices.keys())[pred_class]
             title = "Prediction : {}, confidence : {:.3f}".format(
