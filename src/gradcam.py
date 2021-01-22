@@ -23,8 +23,8 @@ def _compute_gradients(tensor, var_list):
     ]
 
 
-def grad_cam(model, image, category_index, layer_name):
-    no_classes = 1000
+def grad_cam(model, image, category_index, layer_name, no_classes):
+
     target_layer = lambda x: target_category_loss(x, category_index, no_classes)
     x = Lambda(target_layer, output_shape=target_category_loss_output_shape)(
         model.output

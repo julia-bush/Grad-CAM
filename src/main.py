@@ -55,6 +55,7 @@ for filename in os.listdir(test_dir):
         image=preprocessed_input,
         category_index=predicted_class,
         layer_name="block5_conv3",
+        no_classes=no_classes
     )
     cam = cv2.putText(
         cam,
