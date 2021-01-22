@@ -32,6 +32,7 @@ pred_dir = Path.cwd().parent / "predictions" / dataset_name
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
 model = VGG16(weights="imagenet")
+no_classes=1000
 
 for filename in os.listdir(test_dir):
 
