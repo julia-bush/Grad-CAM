@@ -18,11 +18,11 @@ def run():
     sess = tf.compat.v1.Session
     set_session(sess)
 
-    n_classes = 2
+    n_classes = 6
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
-    dataset_name = "concrete"
+    dataset_name = "MultiClassifer"
     # train_dir = Path.cwd().parent / "data" / dataset_name
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name

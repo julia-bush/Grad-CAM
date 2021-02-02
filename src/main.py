@@ -20,6 +20,7 @@ sess = tf.compat.v1.Session
 set_session(sess)
 
 tf.compat.v1.disable_eager_execution()
+# tf.gradients is not supported when eager execution is enabled. Use tf.GradientTape instead.
 
 """
 Specify directory containing images you want to plot grad-CAM heatmaps for.
