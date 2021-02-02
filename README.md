@@ -16,3 +16,9 @@ python src/main.py examples/
 
 The processed images will be placed in the "predictions/examples" folder.
 
+### Data ###
+
+A reasonable 6-class dataset of bridge defects:
+("MultiClassifer" folder only, ignore the rest)
+
+https://zenodo.org/record/2601506#.YBhsuZdxcuU
