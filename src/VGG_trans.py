@@ -59,7 +59,7 @@ def run():
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
 
     # Change the batchsize according to your system RAM
-    train_batchsize = 32
+    train_batchsize = 64
     val_batchsize = 32
     epochs = 5
 
@@ -84,7 +84,7 @@ def run():
 
     model.compile(
         loss="categorical_crossentropy",
-        optimizer=optimizers.Adam(lr=1e-6),
+        optimizer=optimizers.Adam(lr=1e-4),
         metrics=["acc"],
     )
 
