@@ -18,10 +18,10 @@ def run():
     sess = tf.compat.v1.Session
     set_session(sess)
 
-    n_classes = 2
+    n_classes = 6
     img_size = (224, 224, 3)
 
-    dataset_name = "concrete"
+    dataset_name = "MultiClassifier"
     # train_dir = Path.cwd().parent / "data" / dataset_name
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name
@@ -31,7 +31,7 @@ def run():
     pred_dir = Path.cwd() / "predictions/" / dataset_name / "fine/"
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
     # model_weights = f"{Path.cwd().parent}/models/VGG16-concrete.hdf5"
-    model_weights = f"{Path.cwd()}/models/VGG16-concrete.hdf5"
+    model_weights = f"{Path.cwd()}/models/VGG16-{dataset_name}.hdf5"
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
@@ -64,7 +64,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 5
+    epochs = 10
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
