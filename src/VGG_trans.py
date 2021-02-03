@@ -22,7 +22,7 @@ def run():
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
-    dataset_name = "MultiClassifier"
+    dataset_name = "concrete"
     # train_dir = Path.cwd().parent / "data" / dataset_name
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name
