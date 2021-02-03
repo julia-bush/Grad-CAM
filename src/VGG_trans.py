@@ -44,17 +44,17 @@ def run():
 
     model = Sequential()
 
-    # for layer in vgg_conv.layers[:-4]:
-    #     layer.trainable = False
-    #     model.add(layer)
-    #
-    # for layer in vgg_conv.layers[-4:]:
-    #     layer.trainable = True
-    #     model.add(layer)
-
-    for layer in vgg_conv.layers[:]:
+    for layer in vgg_conv.layers[:-4]:
         layer.trainable = False
         model.add(layer)
+
+    for layer in vgg_conv.layers[-4:]:
+        layer.trainable = True
+        model.add(layer)
+
+    # for layer in vgg_conv.layers[:]:
+    #     layer.trainable = False
+    #     model.add(layer)
 
     model.add(Flatten())
     model.add(Dense(128, activation="relu"))
@@ -69,7 +69,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 20
+    epochs = 30
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
