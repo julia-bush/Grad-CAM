@@ -18,7 +18,7 @@ def run():
     sess = tf.compat.v1.Session
     set_session(sess)
 
-    n_classes = 6
+    n_classes = 2
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
