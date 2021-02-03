@@ -44,12 +44,16 @@ def run():
 
     model = Sequential()
 
-    for layer in vgg_conv.layers[:-4]:
-        layer.trainable = False
-        model.add(layer)
+    # for layer in vgg_conv.layers[:-4]:
+    #     layer.trainable = False
+    #     model.add(layer)
+    #
+    # for layer in vgg_conv.layers[-4:]:
+    #     layer.trainable = True
+    #     model.add(layer)
 
-    for layer in vgg_conv.layers[-4:]:
-        layer.trainable = True
+    for layer in vgg_conv.layers[:]:
+        layer.trainable = False
         model.add(layer)
 
     model.add(Flatten())
