@@ -69,7 +69,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 10
+    epochs = 5
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -98,7 +98,7 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"VGG16-{dataset_name}.hdf5", verbose=1, save_weights_only=True
+            model_dir / f"VGG16-{dataset_name}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
         )
     ]
 
