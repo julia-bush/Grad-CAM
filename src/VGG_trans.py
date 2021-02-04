@@ -18,11 +18,11 @@ def run():
     sess = tf.compat.v1.Session
     set_session(sess)
 
-    n_classes = 6
+    n_classes = 2
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
-    dataset_name = "MultiClassifier"
+    dataset_name = "concrete"
     # train_dir = Path.cwd().parent / "data" / dataset_name
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name
@@ -69,7 +69,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 50
+    epochs = 10
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
