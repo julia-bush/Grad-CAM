@@ -44,21 +44,21 @@ def run():
 
     model = Sequential()
 
-    for layer in vgg_conv.layers[:-4]:
+    # for layer in vgg_conv.layers[:-4]:
+    #     layer.trainable = False
+    #     model.add(layer)
+    #
+    # for layer in vgg_conv.layers[-4:]:
+    #     layer.trainable = True
+    #     model.add(layer)
+
+    for layer in vgg_conv.layers[:]:
         layer.trainable = False
         model.add(layer)
 
-    for layer in vgg_conv.layers[-4:]:
-        layer.trainable = True
-        model.add(layer)
-
-    # for layer in vgg_conv.layers[:]:
-    #     layer.trainable = False
-    #     model.add(layer)
-
     model.add(Flatten())
-    # model.add(Dense(128, activation="relu"))
-    # model.add(Dropout(0.5))
+    model.add(Dense(128, activation="relu"))
+    model.add(Dropout(0.5))
     model.add(Dense(n_classes, activation="softmax"))
 
     model.summary()
@@ -119,7 +119,7 @@ def run():
     )
 
     # Save a sample of validation results from random batches:
-    sample_no = 10  # sample_no >= number of batches
+    sample_no = 100  # sample_no >= number of batches
     num_batches = validation_generator.n // val_batchsize
     batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
     for X_val, y_val in validation_generator:
