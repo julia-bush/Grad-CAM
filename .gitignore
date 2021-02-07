@@ -1,8 +1,11 @@
 .venv
-.idea
 .vscode
+.idea
+src/__pycache__
+
 data
 docs
 models
 predictions
 scripts
+

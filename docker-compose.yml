@@ -1,7 +1,14 @@
 services:
-  main:
+  cam:
     build: .
-    volume:
-      # - data:/app/data
-      - /home/ezxjb3/repos/Grad-CAM:/app/
-    entrypoint: ["python", "main.py"]
+    volumes:
+      - .:/app/
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+              - gpu
+    entrypoint: ["python3"]
+
+# e.g. docker-compose run src/main.py

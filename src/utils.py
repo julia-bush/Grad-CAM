@@ -8,6 +8,18 @@ from tensorflow.keras.applications.vgg16 import (
 from tensorflow.python.framework import ops
 
 
+def setup_tensorflow():
+    """ Check GPU is on and configure it to avoid weird errors, using 1 or 2 GPUs """
+    physical_devices = tf.config.experimental.list_physical_devices("GPU")
+    assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
+    config = tf.compat.v1.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.compat.v1.Session(config=config)
+    set_session(sess)
+
+    tf.compat.v1.disable_eager_execution()
+
+
 def normalise(x):
     # utility function to normalise a tensor by its L2 norm
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
