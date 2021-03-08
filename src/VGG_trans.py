@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import matplotlib.pyplot as plt
+import matplotlib as plt
 import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
