@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
@@ -115,22 +115,22 @@ def run():
         validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
-    plt.figure(figsize=(8, 8))
-    plt.title("Learning curve")
-    plt.plot(history.history["loss"], label="loss")
-    plt.plot(history.history["val_loss"], label="val_loss")
-    plt.plot(
-        np.argmin(history.history["val_loss"]),
-        np.min(history.history["val_loss"]),
-        marker="x",
-        color="r",
-        label="best model",
-    )
-    plt.xlabel("Epochs")
-    plt.ylabel("log_loss")
-    plt.legend()
-    plt.savefig(f"{pred_dir}/learning_curve.png")
-    plt.close()
+    # plt.figure(figsize=(8, 8))
+    # plt.title("Learning curve")
+    # plt.plot(history.history["loss"], label="loss")
+    # plt.plot(history.history["val_loss"], label="val_loss")
+    # plt.plot(
+    #     np.argmin(history.history["val_loss"]),
+    #     np.min(history.history["val_loss"]),
+    #     marker="x",
+    #     color="r",
+    #     label="best model",
+    # )
+    # plt.xlabel("Epochs")
+    # plt.ylabel("log_loss")
+    # plt.legend()
+    # plt.savefig(f"{pred_dir}/learning_curve.png")
+    # plt.close()
 
     predictions = model.predict(
         validation_generator,
