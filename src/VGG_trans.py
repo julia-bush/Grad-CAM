@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # import matplotlib.pyplot as plt
-import numpy as np
+# import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
