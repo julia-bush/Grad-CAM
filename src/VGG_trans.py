@@ -18,18 +18,21 @@ def run():
     sess = tf.compat.v1.Session
     set_session(sess)
 
-    n_classes = 2
+    n_classes = 162
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
-    dataset_name = "concrete"
+    dataset_name = "HE_defects"
     # train_dir = Path.cwd().parent / "data" / dataset_name
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name
+    print(f"train_dir = {train_dir}")
     model_dir = Path.cwd() / "models"
+    print(f"model_dir = {model_dir}")
     Path(model_dir).mkdir(parents=True, exist_ok=True)
     # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
     pred_dir = Path.cwd() / "predictions/" / dataset_name
+    print(f"pred_dir = {pred_dir}")
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
     vgg_conv = tf.keras.applications.VGG16(
@@ -69,7 +72,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 5
+    epochs = 10
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -112,6 +115,23 @@ def run():
         validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
+    plt.figure(figsize=(8, 8))
+    plt.title("Learning curve")
+    plt.plot(history.history["loss"], label="loss")
+    plt.plot(history.history["val_loss"], label="val_loss")
+    plt.plot(
+        np.argmin(history.history["val_loss"]),
+        np.min(history.history["val_loss"]),
+        marker="x",
+        color="r",
+        label="best model",
+    )
+    plt.xlabel("Epochs")
+    plt.ylabel("log_loss")
+    plt.legend()
+    plt.savefig(f"{pred_dir}/learning_curve.png")
+    plt.close()
+
     predictions = model.predict(
         validation_generator,
         steps=validation_generator.samples / validation_generator.batch_size,
@@ -119,7 +139,7 @@ def run():
     )
 
     # Save a sample of validation results from random batches:
-    sample_no = 100  # sample_no >= number of batches
+    sample_no = 1000  # sample_no >= number of batches
     num_batches = validation_generator.n // val_batchsize
     batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
     for X_val, y_val in validation_generator:
