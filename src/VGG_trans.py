@@ -1,7 +1,7 @@
 from pathlib import Path
 
-# import matplotlib.pyplot as plt
-# import numpy as np
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
@@ -115,22 +115,22 @@ def run():
         validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
-    # plt.figure(figsize=(8, 8))
-    # plt.title("Learning curve")
-    # plt.plot(history.history["loss"], label="loss")
-    # plt.plot(history.history["val_loss"], label="val_loss")
-    # plt.plot(
-    #     np.argmin(history.history["val_loss"]),
-    #     np.min(history.history["val_loss"]),
-    #     marker="x",
-    #     color="r",
-    #     label="best model",
-    # )
-    # plt.xlabel("Epochs")
-    # plt.ylabel("log_loss")
-    # plt.legend()
-    # plt.savefig(f"{pred_dir}/learning_curve.png")
-    # plt.close()
+    plt.figure(figsize=(8, 8))
+    plt.title("Learning curve")
+    plt.plot(history.history["loss"], label="loss")
+    plt.plot(history.history["val_loss"], label="val_loss")
+    plt.plot(
+        np.argmin(history.history["val_loss"]),
+        np.min(history.history["val_loss"]),
+        marker="x",
+        color="r",
+        label="best model",
+    )
+    plt.xlabel("Epochs")
+    plt.ylabel("log_loss")
+    plt.legend()
+    plt.savefig(f"{pred_dir}/learning_curve.png")
+    plt.close()
 
     predictions = model.predict(
         validation_generator,
@@ -138,28 +138,28 @@ def run():
         verbose=1,
     )
 
-    # # Save a sample of validation results from random batches:
-    # sample_no = 1000  # sample_no >= number of batches
-    # num_batches = validation_generator.n // val_batchsize
-    # batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
-    # for X_val, y_val in validation_generator:
-    #     if validation_generator.batch_index in batch_sample_idx:
-    #         random_sample_idx = np.random.randint(low=0, high=val_batchsize)
-    #         X_val_sample_img = X_val[random_sample_idx, :]
-    #         random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
-    #         pred_class = np.argmax(predictions[random_sample_pred_idx])
-    #         pred_label = list(validation_generator.class_indices.keys())[pred_class]
-    #         title = "Prediction : {}, confidence : {:.3f}".format(
-    #             pred_label, predictions[random_sample_pred_idx][pred_class]
-    #         )
-    #         plt.figure(figsize=[7, 7])
-    #         plt.axis("off")
-    #         plt.title(title)
-    #         plt.imshow(X_val_sample_img)
-    #         plt.savefig(f"{pred_dir}/{random_sample_pred_idx}.jpg")
-    #         plt.close()
-    #     if validation_generator.batch_index == num_batches-1:
-    #         break
+    # Save a sample of validation results from random batches:
+    sample_no = 1000  # sample_no >= number of batches
+    num_batches = validation_generator.n // val_batchsize
+    batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
+    for X_val, y_val in validation_generator:
+        if validation_generator.batch_index in batch_sample_idx:
+            random_sample_idx = np.random.randint(low=0, high=val_batchsize)
+            X_val_sample_img = X_val[random_sample_idx, :]
+            random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
+            pred_class = np.argmax(predictions[random_sample_pred_idx])
+            pred_label = list(validation_generator.class_indices.keys())[pred_class]
+            title = "Prediction : {}, confidence : {:.3f}".format(
+                pred_label, predictions[random_sample_pred_idx][pred_class]
+            )
+            plt.figure(figsize=[7, 7])
+            plt.axis("off")
+            plt.title(title)
+            plt.imshow(X_val_sample_img)
+            plt.savefig(f"{pred_dir}/{random_sample_pred_idx}.jpg")
+            plt.close()
+        if validation_generator.batch_index == num_batches-1:
+            break
 
 
 if __name__ == "__main__":
