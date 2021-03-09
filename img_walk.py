@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     # parser.add_argument("--log_dir", default="C:/Users/j/Documents/PhD/Data/scrapy/logs/preprocessing", type=str)
     # parser.add_argument("--sort_dir", default="C:/Users/j/Documents/PhD/Data/scrapy/sorted", type=str)
-    parser.add_argument("--log_dir", default="/home/ezxjb3/repos/Grad-CAM/logs", type=str)
-    parser.add_argument("--sort_dir", default="/home/ezxjb3/repos/Grad-CAM/data/HE_defects", type=str)
+    parser.add_argument("--log_dir", default="/app/logs", type=str)  # mounted volume in docker container
+    parser.add_argument("--sort_dir", default="/app/data/HE_defects", type=str)  # mounted volume in docker container
     args = parser.parse_args()
     try_load_imgages(args=args)
