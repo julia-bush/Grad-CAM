@@ -91,20 +91,20 @@ def run():
         metrics=["acc"],
     )
 
-    callbacks = [
-        ModelCheckpoint(
-            model_dir / f"VGG16-{dataset_name}-fine.hdf5", verbose=1, save_weights_only=True
-        )
-    ]
+    # callbacks = [
+    #     ModelCheckpoint(
+    #         model_dir / f"VGG16-{dataset_name}-fine.hdf5", verbose=1, save_weights_only=True
+    #     )
+    # ]
 
-    history = model.fit_generator(
-        generator=train_generator,
-        steps_per_epoch=train_generator.samples // train_generator.batch_size,
-        epochs=epochs,
-        verbose=1,
-        callbacks=callbacks,
-        validation_data=validation_generator
-    )
+    # history = model.fit_generator(
+    #     generator=train_generator,
+    #     steps_per_epoch=train_generator.samples // train_generator.batch_size,
+    #     epochs=epochs,
+    #     verbose=1,
+    #     callbacks=callbacks,
+    #     validation_data=validation_generator
+    # )
 
     predictions = model.predict(
         validation_generator,
