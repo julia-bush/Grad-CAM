@@ -31,7 +31,7 @@ def run():
     print(f"model_dir = {model_dir}")
     Path(model_dir).mkdir(parents=True, exist_ok=True)
     # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
-    pred_dir = Path.cwd() / "predictions/" / dataset_name
+    pred_dir = Path.cwd() / "predictions/" / f"{dataset_name}"
     print(f"pred_dir = {pred_dir}")
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
