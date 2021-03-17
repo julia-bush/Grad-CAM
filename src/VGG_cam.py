@@ -14,7 +14,8 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 physical_devices = tf.config.experimental.list_physical_devices("GPU")
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
 config = tf.compat.v1.ConfigProto()
-sess = tf.compat.v1.Session
+config.gpu_options.allow_growth = True
+sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
 tf.compat.v1.disable_eager_execution()

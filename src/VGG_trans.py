@@ -15,7 +15,7 @@ def run():
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
     config = tf.compat.v1.ConfigProto()
-    sess = tf.compat.v1.Session
+    sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
     n_classes = 161
