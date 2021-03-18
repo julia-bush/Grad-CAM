@@ -92,7 +92,7 @@ def run():
     print(labels)
     labels = dict((v, k) for k, v in labels.items())
     labels_list = []
-    for i in range(n_classes):
+    for i in range(n_classes-1):
         labels_list.append(labels[i])
     print(labels_list)
 
