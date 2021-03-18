@@ -88,6 +88,13 @@ def run():
         subset="training",
     )
 
+    labels = (train_generator.class_indices)
+    print(labels)
+    labels = dict((v, k) for k, v in labels.items())
+    labels_list = []
+    for i in range(n_classes):
+        labels_list.append(labels[i])
+
     # Data generator for validation data
     validation_generator = train_datagen.flow_from_directory(
         train_dir,
@@ -146,7 +153,7 @@ def run():
     show_classification_report(
         y_true=validation_generator.classes,
         y_pred=np.argmax(predictions, axis=1),
-        class_names=folder_names_in_path(train_dir)
+        class_names=labels_list
     )
 
     # Save a sample of validation results from random batches:
