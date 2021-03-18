@@ -1,7 +1,11 @@
+from pathlib import Path
+from typing import List
+
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras
 import tensorflow.keras.backend as K
+from sklearn.metrics import confusion_matrix, classification_report
 from tensorflow.keras.applications.vgg16 import (
     VGG16,
 )
@@ -74,3 +78,14 @@ def deprocess_image(x):
         x = x.transpose((1, 2, 0))
     x = np.clip(x, 0, 255).astype("uint8")
     return x
+
+
+def folder_names_in_path(path: Path) -> List[str]:
+    return [f.name for f in path.glob("*") if f.is_dir]
+
+
+def show_classification_report(y_true, y_pred, class_names):
+    print('Confusion Matrix')
+    print(confusion_matrix(y_true, y_pred))
+    print('Classification Report')
+    print(classification_report(y_true, y_pred, target_names=class_names))

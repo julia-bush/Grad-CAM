@@ -9,6 +9,8 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
+from src.utils import folder_names_in_path, show_classification_report
+
 
 def run():
     # GPU config works for both one or two GPUs
@@ -27,6 +29,9 @@ def run():
     # model_dir = Path.cwd().parent / "models"
     train_dir = Path.cwd() / "data" / dataset_name
     print(f"train_dir = {train_dir}")
+
+    n_classes = len(folder_names_in_path(train_dir))
+
     model_dir = Path.cwd() / "models"
     print(f"model_dir = {model_dir}")
     Path(model_dir).mkdir(parents=True, exist_ok=True)
@@ -137,6 +142,12 @@ def run():
         validation_generator,
         steps=validation_generator.samples / validation_generator.batch_size,
         verbose=1,
+    )
+
+    show_classification_report(
+        y_true=validation_generator.classes,
+        y_pred=np.argmax(predictions, axis=1),
+        class_names=folder_names_in_path(train_dir)
     )
 
     # Save a sample of validation results from random batches:
