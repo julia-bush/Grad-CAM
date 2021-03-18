@@ -94,6 +94,7 @@ def run():
     labels_list = []
     for i in range(n_classes):
         labels_list.append(labels[i])
+    print(labels_list)
 
     # Data generator for validation data
     validation_generator = train_datagen.flow_from_directory(
