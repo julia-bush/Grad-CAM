@@ -17,10 +17,9 @@ def run():
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
     config = tf.compat.v1.ConfigProto()
-    sess = tf.compat.v1.Session
+    sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
-    n_classes = 11
     img_size = (224, 224, 3)
     # print("image size = ", img_size[:-1])
 
@@ -78,7 +77,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 20
+    epochs = 1
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
