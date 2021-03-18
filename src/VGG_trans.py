@@ -70,8 +70,8 @@ def run():
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
 
     # Change the batchsize according to your system RAM
-    train_batchsize = 16
-    val_batchsize = 16
+    train_batchsize = 32
+    val_batchsize = 32
     epochs = 20
 
     # Data generator for training data
