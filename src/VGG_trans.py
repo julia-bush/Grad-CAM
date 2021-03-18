@@ -9,7 +9,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from src.utils import folder_names_in_path, show_classification_report
+from utils import folder_names_in_path, show_classification_report
 
 
 def run():
