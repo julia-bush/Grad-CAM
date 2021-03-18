@@ -28,7 +28,7 @@ def run():
     model_dir = Path.cwd() / "models"
     Path(model_dir).mkdir(parents=True, exist_ok=True)
     # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
-    pred_dir = Path.cwd() / "predictions/" / dataset_name / "fine/"
+    pred_dir = Path.cwd() / "predictions/" / f"{dataset_name}" / "fine/"
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
     # model_weights = f"{Path.cwd().parent}/models/VGG16-concrete.hdf5"
     model_weights = f"{Path.cwd()}/models/VGG16-{dataset_name}.hdf5"

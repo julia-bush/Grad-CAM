@@ -25,38 +25,42 @@ Specify directory containing images you want to plot grad-CAM heatmaps for.
 Uses VGG16 transfer-learned on the concrete dataset.
 """
 
-dataset_name = "concrete_sample"
+dataset_name = "coarse_sample"
 test_dir = Path.cwd().parent / "data" / dataset_name
-pred_dir = Path.cwd().parent / "predictions" / dataset_name / "fine_CAM"
+pred_dir = Path.cwd().parent / "predictions" / dataset_name / "trans_CAM"
 Path(pred_dir).mkdir(parents=True, exist_ok=True)
-model_weights = f"{Path.cwd().parent}/models/VGG16-concrete-fine.hdf5"
+model_weights = f"{Path.cwd().parent}/models/VGG16-multi_class_HE.hdf5"
 
-no_classes = 2
+no_classes = 11
 img_size = (224, 224, 3)
 
-vgg_conv = tf.keras.applications.VGG16(
-    include_top=False,
-    weights=None,
-    input_tensor=None,
-    input_shape=img_size,
-    pooling=None
-)
+# vgg_conv = tf.keras.applications.VGG16(
+#     include_top=False,
+#     weights=None,
+#     input_tensor=None,
+#     input_shape=img_size,
+#     pooling=None
+# )
+#
+# print(vgg_conv.summary())
+#
+# model = Sequential()
+#
+# for layer in vgg_conv.layers[:]:
+#     model.add(layer)
+#
+# model.add(Flatten())
+# # model.add(Dense(128, activation="relu"))
+# # model.add(Dropout(0.5))
+# model.add(Dense(no_classes, activation="softmax"))
+#
+# model.summary()
+#
+# model.load_weights(model_weights)
 
-print(vgg_conv.summary())
-
-model = Sequential()
-
-for layer in vgg_conv.layers[:]:
-    model.add(layer)
-
-model.add(Flatten())
-model.add(Dense(128, activation="relu"))
-model.add(Dropout(0.5))
-model.add(Dense(no_classes, activation="softmax"))
+model = tf.keras.models.load_model(model_weights)
 
 model.summary()
-
-model.load_weights(model_weights)
 
 for filename in os.listdir(test_dir):
 
@@ -71,7 +75,7 @@ for filename in os.listdir(test_dir):
         model=model,
         image=preprocessed_input,
         category_index=predicted_class,
-        layer_name="block5_conv2",
+        layer_name="block5_conv3",
         no_classes=no_classes
     )
     cam = cv2.putText(
