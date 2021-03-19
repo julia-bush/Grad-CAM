@@ -21,22 +21,18 @@ def run():
     set_session(sess)
 
     img_size = (224, 224, 3)
-    # print("image size = ", img_size[:-1])
 
     dataset_name = "HE_defects"
-    # train_dir = Path.cwd().parent / "data" / dataset_name
-    # model_dir = Path.cwd().parent / "models"
-    train_dir = Path.cwd() / "data" / dataset_name
-    print(f"train_dir = {train_dir}")
+    nn_name = "VGG_trans"
 
+    main_dir = Path(__file__).parent.parent
+    train_dir = main_dir / "data" / dataset_name
     n_classes = len(folder_names_in_path(train_dir))
-
-    model_dir = Path.cwd() / "models"
-    print(f"model_dir = {model_dir}")
+    model_dir = main_dir / "models" / dataset_name / nn_name
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
-    pred_dir = Path.cwd() / "predictions/" / f"{dataset_name}"
-    print(f"pred_dir = {pred_dir}")
+    results_dir = main_dir / "results" / dataset_name / nn_name
+    Path(results_dir).mkdir(parents=True, exist_ok=True)
+    pred_dir = main_dir / "predictions/" / dataset_name / nn_name
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
 
     vgg_conv = tf.keras.applications.VGG16(
@@ -106,7 +102,7 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"VGG16-{dataset_name}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
+            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
         )
     ]
 
@@ -134,7 +130,7 @@ def run():
     plt.xlabel("Epochs")
     plt.ylabel("log_loss")
     plt.legend()
-    plt.savefig(f"{pred_dir}/learning_curve.png")
+    plt.savefig(f"{results_dir}/learning_curve.png")
     plt.close()
 
     predictions = model.predict(
@@ -146,8 +142,12 @@ def run():
     show_classification_report(generator=validation_generator, predictions=predictions)
 
     # Save a sample of validation results from random batches:
-    sample_no = 1000  # sample_no >= number of batches
+
+    sample_no = 1000
     num_batches = validation_generator.n // val_batchsize
+    # take at most one sample from every batch:
+    if sample_no > num_batches:
+        sample_no = num_batches
     batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
     for X_val, y_val in validation_generator:
         if validation_generator.batch_index in batch_sample_idx:
@@ -163,7 +163,7 @@ def run():
             plt.axis("off")
             plt.title(title)
             plt.imshow(X_val_sample_img)
-            plt.savefig(f"{pred_dir}/{random_sample_pred_idx}.jpg")
+            plt.savefig(f"{pred_dir}/val_sample_{random_sample_pred_idx}.jpg")
             plt.close()
         if validation_generator.batch_index == num_batches-1:
             break
