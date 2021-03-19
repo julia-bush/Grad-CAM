@@ -88,14 +88,6 @@ def run():
         subset="training",
     )
 
-    labels = (train_generator.class_indices)
-    print(labels)
-    labels = dict((v, k) for k, v in labels.items())
-    labels_list = []
-    for i in range(n_classes):
-        labels_list.append(labels[i])
-    print(labels_list)
-
     # Data generator for validation data
     validation_generator = train_datagen.flow_from_directory(
         train_dir,
@@ -151,11 +143,7 @@ def run():
         verbose=1,
     )
 
-    show_classification_report(
-        y_true=validation_generator.classes,
-        y_pred=np.argmax(predictions, axis=1),
-        class_names=labels_list
-    )
+    show_classification_report(generator=validation_generator, predictions=predictions)
 
     # Save a sample of validation results from random batches:
     sample_no = 1000  # sample_no >= number of batches
@@ -179,6 +167,7 @@ def run():
             plt.close()
         if validation_generator.batch_index == num_batches-1:
             break
+
 
 
 if __name__ == "__main__":
