@@ -73,7 +73,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 5
+    epochs = 10
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -169,6 +169,6 @@ def run():
             break
 
 
-
+# TODO: pass dataset_name and epochs as arguments
 if __name__ == "__main__":
     run()
