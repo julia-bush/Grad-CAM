@@ -99,23 +99,29 @@ def folder_names_in_path(path: Path) -> List[str]:
     return [f.name for f in path.glob("*") if f.is_dir]
 
 
-def show_classification_report(generator: DirectoryIterator, predictions: np.ndarray) -> None:
-    y_true = generator.classes
-    y_pred = np.argmax(predictions, axis=1)
-    print('Confusion Matrix')
-    print(confusion_matrix(y_true, y_pred))
-    print('Classification Report')
-    print(classification_report(y_true, y_pred, target_names=_get_ordered_class_names(generator)))
+def _conf_mat(y_true, y_pred, n_classes):
+    return np.array([[sum((np.array(y_true) == i) & (np.array(y_pred) == j)) for i in range(n_classes)] for j in range(n_classes)])
 
 
-def save_classification_report(generator: DirectoryIterator, predictions: np.ndarray, results_dir) -> None:
+def show_classification_report(generator: DirectoryIterator, predictions: np.ndarray, n_classes: int) -> None:
     y_true = generator.classes
     y_pred = np.argmax(predictions, axis=1)
-    matrix = confusion_matrix(y_true, y_pred)
-    np.savetxt(f"{results_dir}/confusion_matrix.csv", matrix, delimiter=",")
     class_names = _get_ordered_class_names(generator)
+    matrix = _conf_mat(y_true, y_pred, n_classes=n_classes)
+    print('Confusion Matrix:')
+    print(matrix)
+    print('Classification Report')
+    print(classification_report(y_true, y_pred, target_names=class_names, zero_division=0))
+
+
+def save_classification_report(generator: DirectoryIterator, predictions: np.ndarray, results_dir: Path,  n_classes: int) -> None:
+    y_true = generator.classes
+    y_pred = np.argmax(predictions, axis=1)
+    class_names = _get_ordered_class_names(generator)
+    matrix = _conf_mat(y_true, y_pred, n_classes=n_classes)
+    np.savetxt(f"{results_dir}/confusion_matrix.csv", matrix, delimiter=",")
     pd.DataFrame(matrix, index=class_names, columns=class_names).to_csv(f"{results_dir}/confusion_matrix_headers.csv", index=True)
-    report = (classification_report(y_true, y_pred, target_names=class_names, output_dict=True))
+    report = (classification_report(y_true, y_pred, target_names=class_names, output_dict=True, zero_division=0))
     pd.DataFrame.from_dict(report, orient='columns', dtype=None, columns=None).to_csv(f"{results_dir}/classification_metrics.csv", index=True)
 
 

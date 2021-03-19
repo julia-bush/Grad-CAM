@@ -17,6 +17,7 @@ def run():
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
     config = tf.compat.v1.ConfigProto()
+    config.gpu_options.allow_growth = True
     sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
@@ -131,8 +132,8 @@ def run():
         verbose=1,
     )
 
-    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir)
-    show_classification_report(generator=validation_generator, predictions=predictions)
+    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
+    show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
 
     # Save a sample of validation results from random batches:
 
