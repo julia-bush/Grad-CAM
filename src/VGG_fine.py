@@ -22,16 +22,14 @@ def run():
     img_size = (224, 224, 3)
 
     dataset_name = "HE_defects"
-    # train_dir = Path.cwd().parent / "data" / dataset_name
-    # model_dir = Path.cwd().parent / "models"
-    train_dir = Path.cwd() / "data" / dataset_name
-    model_dir = Path.cwd() / "models"
-    Path(model_dir).mkdir(parents=True, exist_ok=True)
-    # pred_dir = Path.cwd().parent / "predictions/" / dataset_name
-    pred_dir = Path.cwd() / "predictions/" / f"{dataset_name}" / "fine/"
-    Path(pred_dir).mkdir(parents=True, exist_ok=True)
-    # model_weights = f"{Path.cwd().parent}/models/VGG16-concrete.hdf5"
-    model_weights = f"{Path.cwd()}/models/VGG16-{dataset_name}.hdf5"
+    nn_name = "VGG_fine"
+
+    main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name,
+                                                                                         nn_name=nn_name,
+                                                                                         file_path=Path(__file__))
+
+    # get the transfer-learned model to fine-tune
+    model_weights = main_dir / "models" / dataset_name / "VGG_trans" / f"VGG_trans-{dataset_name}.hdf5"
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
@@ -93,7 +91,7 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"VGG16-{dataset_name}-fine.hdf5", verbose=1, save_weights_only=True
+            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=True
         )
     ]
 
