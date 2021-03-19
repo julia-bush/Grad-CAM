@@ -9,7 +9,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import folder_names_in_path, show_classification_report
+from utils import setup_directories, folder_names_in_path, show_classification_report
 
 
 def run():
@@ -25,15 +25,7 @@ def run():
     dataset_name = "HE_defects"
     nn_name = "VGG_trans"
 
-    main_dir = Path(__file__).parent.parent
-    train_dir = main_dir / "data" / dataset_name
-    n_classes = len(folder_names_in_path(train_dir))
-    model_dir = main_dir / "models" / dataset_name / nn_name
-    Path(model_dir).mkdir(parents=True, exist_ok=True)
-    results_dir = main_dir / "results" / dataset_name / nn_name
-    Path(results_dir).mkdir(parents=True, exist_ok=True)
-    pred_dir = main_dir / "predictions/" / dataset_name / nn_name
-    Path(pred_dir).mkdir(parents=True, exist_ok=True)
+    main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, nn_name=nn_name, file_path=Path(__file__))
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,

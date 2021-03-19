@@ -53,7 +53,15 @@ def run():
     )
 
     model = Sequential()
-    model.add(Conv2D(input_shape=img_size, filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
+    model.add(
+        Conv2D(
+            input_shape=img_size,
+            filters=64,
+            kernel_size=(3, 3),
+            padding="same",
+            activation="relu",
+        )
+    )
     model.add(Conv2D(filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
     model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
@@ -85,10 +93,19 @@ def run():
 
     model.summary()
 
-    checkpoint = ModelCheckpoint(f"VGG16-{dataset_name}.hdf5", monitor='val_acc', verbose=1, save_best_only=True,
-                                 save_weights_only=False, mode='auto', period=1)
+    checkpoint = ModelCheckpoint(
+        f"VGG16-{dataset_name}.hdf5",
+        monitor="val_acc",
+        verbose=1,
+        save_best_only=True,
+        save_weights_only=False,
+        mode="auto",
+        period=1,
+    )
 
-    early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
+    early = EarlyStopping(
+        monitor="val_acc", min_delta=0, patience=20, verbose=1, mode="auto"
+    )
 
     history = model.fit_generator(
         generator=train_generator,
@@ -97,9 +114,9 @@ def run():
         verbose=1,
         callbacks=[checkpoint, early],
         validation_data=validation_generator,
-        validation_steps=validation_generator.samples // validation_generator.batch_size
+        validation_steps=validation_generator.samples
+        // validation_generator.batch_size,
     )
-
 
     # Save a sample of validation results from random batches:
     sample_no = 10  # sample_no >= number of batches
@@ -112,7 +129,9 @@ def run():
             random_sample_idx = np.random.randint(low=0, high=val_batchsize)
             print(f"random_sample_idx = {random_sample_idx}")
             X_val_sample_img = X_val[random_sample_idx, :]
-            random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
+            random_sample_pred_idx = (
+                random_sample_idx + validation_generator.batch_index * val_batchsize
+            )
             print(f"random_sample_pred_idx = {random_sample_pred_idx}")
             pred_class = np.argmax(predictions[random_sample_pred_idx])
             pred_label = list(validation_generator.class_indices.keys())[pred_class]
@@ -125,7 +144,7 @@ def run():
             plt.imshow(X_val_sample_img)
             plt.savefig(f"{pred_dir}/{random_sample_pred_idx}.jpg")
             plt.close()
-        if validation_generator.batch_index == num_batches-1:
+        if validation_generator.batch_index == num_batches - 1:
             break
 
 

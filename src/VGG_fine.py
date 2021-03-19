@@ -9,6 +9,8 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
+from utils import setup_directories
+
 
 def run():
     # GPU config works for both one or two GPUs
@@ -18,7 +20,6 @@ def run():
     sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
-    n_classes = 161
     img_size = (224, 224, 3)
 
     dataset_name = "HE_defects"

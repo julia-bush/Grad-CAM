@@ -71,6 +71,8 @@ for filename in os.listdir(test_dir):
     print(f"Predicted class: {np.argmax(predictions)} with probability {np.max(predictions)}")
 
     predicted_class = np.argmax(predictions)
+    class_labels = ["calcite", "corrosion", "cracks", "debonding", "erosion", "exposed reinforcement", "graffiti", "lamination", "spalling", "vegetation", "water"]
+
     cam, heatmap = grad_cam(
         model=model,
         image=preprocessed_input,
@@ -80,7 +82,7 @@ for filename in os.listdir(test_dir):
     )
     cam = cv2.putText(
         cam,
-        f"Class: {np.argmax(predictions)}",
+        f"Class: {class_labels[predicted_class]}",
         (5, 199),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.5,
