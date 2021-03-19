@@ -9,7 +9,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, folder_names_in_path, show_classification_report
+from utils import setup_directories, folder_names_in_path, show_classification_report, save_classification_report
 
 
 def run():
@@ -131,6 +131,7 @@ def run():
         verbose=1,
     )
 
+    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir)
     show_classification_report(generator=validation_generator, predictions=predictions)
 
     # Save a sample of validation results from random batches:

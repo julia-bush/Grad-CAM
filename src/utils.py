@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 import tensorflow.keras
 import tensorflow.keras.backend as K
@@ -101,10 +102,21 @@ def folder_names_in_path(path: Path) -> List[str]:
 def show_classification_report(generator: DirectoryIterator, predictions: np.ndarray) -> None:
     y_true = generator.classes
     y_pred = np.argmax(predictions, axis=1)
-    print('Confusion Matrix')  # TODO: save to file
+    print('Confusion Matrix')
     print(confusion_matrix(y_true, y_pred))
-    print('Classification Report')  # TODO: save to file
+    print('Classification Report')
     print(classification_report(y_true, y_pred, target_names=_get_ordered_class_names(generator)))
+
+
+def save_classification_report(generator: DirectoryIterator, predictions: np.ndarray, results_dir) -> None:
+    y_true = generator.classes
+    y_pred = np.argmax(predictions, axis=1)
+    matrix = confusion_matrix(y_true, y_pred)
+    np.savetxt(f"{results_dir}/confusion_matrix.csv", matrix, delimiter=",")
+    class_names = _get_ordered_class_names(generator)
+    pd.DataFrame(matrix, index=class_names, columns=class_names).to_csv(f"{results_dir}/confusion_matrix_headers.csv", index=True)
+    report = (classification_report(y_true, y_pred, target_names=class_names, output_dict=True))
+    pd.DataFrame.from_dict(report, orient='columns', dtype=None, columns=None).to_csv(f"{results_dir}/classification_metrics.csv", index=True)
 
 
 def _get_ordered_class_names(train_generator: DirectoryIterator) -> List[str]:
