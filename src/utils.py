@@ -81,6 +81,19 @@ def deprocess_image(x):
     return x
 
 
+def setup_directories(dataset_name, nn_name, file_path):
+    main_dir = file_path.parent.parent
+    train_dir = main_dir / "data" / dataset_name
+    n_classes = len(folder_names_in_path(train_dir))
+    model_dir = main_dir / "models" / dataset_name / nn_name
+    Path(model_dir).mkdir(parents=True, exist_ok=True)
+    results_dir = main_dir / "results" / dataset_name / nn_name
+    Path(results_dir).mkdir(parents=True, exist_ok=True)
+    pred_dir = main_dir / "predictions/" / dataset_name / nn_name
+    Path(pred_dir).mkdir(parents=True, exist_ok=True)
+    return main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes
+
+
 def folder_names_in_path(path: Path) -> List[str]:
     return [f.name for f in path.glob("*") if f.is_dir]
 
@@ -88,9 +101,9 @@ def folder_names_in_path(path: Path) -> List[str]:
 def show_classification_report(generator: DirectoryIterator, predictions: np.ndarray) -> None:
     y_true = generator.classes
     y_pred = np.argmax(predictions, axis=1)
-    print('Confusion Matrix')
+    print('Confusion Matrix')  # TODO: save to file
     print(confusion_matrix(y_true, y_pred))
-    print('Classification Report')
+    print('Classification Report')  # TODO: save to file
     print(classification_report(y_true, y_pred, target_names=_get_ordered_class_names(generator)))
 
 
