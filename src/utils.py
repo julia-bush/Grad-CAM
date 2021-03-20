@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import List, Tuple
 
 import numpy as np
@@ -6,7 +5,9 @@ import pandas as pd
 import tensorflow as tf
 import tensorflow.keras
 import tensorflow.keras.backend as K
-from sklearn.metrics import confusion_matrix, classification_report
+from keras_preprocessing.image import ImageDataGenerator
+from pathlib import Path
+from sklearn.metrics import classification_report
 from tensorflow.keras.applications.vgg16 import (
     VGG16,
 )
@@ -158,3 +159,48 @@ def load_generator_truths(pred_dir: Path):  # TODO: -> List[str], List[int], Dic
     class_indices = np.load(f"{pred_dir}/val_class_indices.npy", allow_pickle=True).item()
     labels = np.load(f"{pred_dir}/val_labels.npy").tolist()
     return filenames, classes, class_indices, labels
+
+
+
+def make_data_generators(train_dir, target_size, train_batchsize, val_batchsize, preprocessing_function, validation_split = 0.2):
+    """ Creates train and validation data generators with the same preprocessing.
+    Train generator includes data augmentation
+    """
+    datagen = ImageDataGenerator(
+        validation_split=validation_split,
+        preprocessing_function=preprocessing_function,
+    )
+
+    # Data generator for training data
+    train_generator = datagen.flow_from_directory(
+        train_dir,
+        target_size=target_size,
+        batch_size=train_batchsize,
+        class_mode="categorical",
+        subset="training",
+        seed=0
+    )
+
+    # Data generator for validation data
+    validation_generator = datagen.flow_from_directory(
+        train_dir,
+        target_size=target_size,
+        batch_size=val_batchsize,
+        class_mode="categorical",
+        subset="validation",
+        seed=0
+    )
+    return train_generator, validation_generator
+
+
+def _data_generator(target_size, batchsize, datagen, data_dir, subset):
+    train_generator = datagen.flow_from_directory(
+        data_dir,
+        target_size=target_size,
+        batch_size=batchsize,
+        class_mode="categorical",
+        subset=subset,
+        color_mode='rgb',
+        shuffle=False,
+    )
+    return train_generator

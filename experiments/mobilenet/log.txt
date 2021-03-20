@@ -1,0 +1,63 @@
+# Shorthand log for various mobilenet related experiments.
+# This is executed on HE_defects, 161 classes.
+# Baseline is VGG at ~0.21 val acc for 1 epoch
+
+mobile + 1024 + 512 [150 unfrozen]
+301/5023 [>.............................] - ETA: 3:47:37 - loss: 3.8150 - acc: 0.1482
+mobile + 128 + 0 [0 unfrozen]
+1811/5023 [=========>....................] - ETA: 22:20 - loss: 3.9805 - acc: 0.0981
+mobile + 256 + 128 [0 unfrozen]
+1444/5023 [=======>......................] - ETA: 23:03 - loss: 4.0280 - acc: 0.0901
+lr: 0.0001 -> 0.01
+359/5023 [=>............................] - ETA: 26:15 - loss: 4.0968 - acc: 0.0899
+Add data aug (brightness_range=[0.5, 1.2], shear_range=45., rotation_range=90), remove 1/255 scaling
+5023/5023 [==============================] - 2760s 549ms/step - loss: 3.6095 - acc: 0.1722 - val_loss: 3.5238 - val_acc: 0.1861
+increase batch size 128
+584/1255 [============>.................] - ETA: 15:48 - loss: 3.6206 - acc: 0.1772  (Out of memory)
+reduce batch to 32, mobile + 128 + 128
+1205/5023 [======>.......................] - ETA: 23:01 - loss: 3.8715 - acc: 0.1151
+steps per epoch: (samples/batch) -> 100
+Epoch 00005: val_loss did not improve from 4.49780
+100/100 [==============================] - 74s 744ms/step - loss: 3.6563 - acc: 0.1581 - val_loss: 4.6048 - val_acc: 0.0000e+00
+# spotted problem with aug. Validation data was being augmented. created _data_generators() to fix
+Epoch 00020: val_loss did not improve from 4.52486
+100/100 [==============================] - 52s 521ms/step - loss: 4.2436 - acc: 0.0700 - val_loss: 4.6635 - val_acc: 0.0000e+00
+ mobile + 128 + 128 + 128
+Epoch 00006: val_loss did not improve from 4.77063
+100/100 [==============================] - 53s 527ms/step - loss: 4.1158 - acc: 0.1100 - val_loss: 4.7902 - val_acc: 0.0000e+00
+# val loss stagnant
+mobile + 128, replace GlobalPool -> Flatten()
+# val acc still at 0.00
+epoch scan: 100 -> 1000 imgs
+# val acc still 0.00
+mobile + conv2d_128_3_relu + dropout_0.2 + GlobalAvsPool2d
+Epoch 00010: val_loss did not improve from 4.09312
+50/50 [==============================] - 15s 302ms/step - loss: 3.4018 - acc: 0.2194 - val_loss: 4.2922 - val_acc: 0.0362
+enable validation shuffle
+Epoch 00020: val_loss did not improve from 3.83108
+100/100 [==============================] - 29s 293ms/step - loss: 3.8816 - acc: 0.1178 - val_loss: 3.8579 - val_acc: 0.1269
+enable data aug
+Epoch 00020: val_loss improved from 3.83965 to 3.83344, saving model to C:\Users\tadeo\repos\L\Grad-CAM\models\HE_defects\mobilenet_trans\mobilenet_trans-HE_defects.hdf5
+100/100 [==============================] - 53s 531ms/step - loss: 3.8936 - acc: 0.1138 - val_loss: 3.8334 - val_acc: 0.1250
+increase complexity to: mobile + conv2d_128_3_relu + dropout_0.2 + GlobalAvsPool2d + 128
+Epoch 10/20
+100/100 [==============================] - ETA: 0s - loss: 4.9068 - acc: 0.0925
+increase complexity: mobile + dropout_0.2 + GlobalAvsPool2d + 128 + 128
+
+# switching to multiclass_main (3 superclasses)
+fail (0.32 val acc), always predict class 0
+# removing 1/255 scaling
+fail (0.32 val acc), always predict class 0
+# allow full net train, reduce batchsize to 4 (to avoid OOM error)
+Epoch 00001: val_loss improved from inf to 1.09775, saving model to C:\Users\tadeo\repos\L\Grad-CAM\models\multiclass_main\mobilenet_trans\mobilenet_trans-multiclass_main.hdf5
+100/100 [==============================] - 8s 79ms/step - loss: 1.0983 - acc: 0.3700 - val_loss: 1.0978 - val_acc: 0.5350
+# increase to full-dataset epoch
+Epoch 00001: val_loss improved from inf to 0.97773, saving model to C:\Users\tadeo\repos\L\Grad-CAM\models\multiclass_main\mobilenet_trans\mobilenet_trans-multiclass_main.hdf5
+13931/13931 [==============================] - 813s 58ms/step - loss: 1.0616 - acc: 0.4720 - val_loss: 0.9777 - val_acc: 0.6185
+# increate to 5 epochs (to compare with vgg which goes from .59 (epoch 1) -> .70 (epoch 5)
+OOM after epoch 1, during validation
+# reduce batchsize to 1
+Epoch 00001: val_loss improved from inf to 1.06339, saving model to C:\Users\tadeo\repos\L\Grad-CAM\models\multiclass_main\mobilenet_trans\mobilenet_trans-multiclass_main.hdf5
+55724/55724 [==============================] - 1111s 20ms/step - loss: 1.0874 - acc: 0.3899 - val_loss: 1.0634 - val_acc: 0.5225
+# class 2 never predicted
+# remove data aug, set batch size back to 4
