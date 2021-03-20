@@ -9,7 +9,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, folder_names_in_path, show_classification_report
+from utils import setup_directories, folder_names_in_path, show_classification_report, save_classification_report
 
 
 def run():
@@ -17,6 +17,7 @@ def run():
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
     config = tf.compat.v1.ConfigProto()
+    config.gpu_options.allow_growth = True
     sess = tf.compat.v1.Session(config=config)
     set_session(sess)
 
@@ -65,7 +66,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 1
+    epochs = 20
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -131,7 +132,8 @@ def run():
         verbose=1,
     )
 
-    show_classification_report(generator=validation_generator, predictions=predictions)
+    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
+    show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
 
     # Save a sample of validation results from random batches:
 
