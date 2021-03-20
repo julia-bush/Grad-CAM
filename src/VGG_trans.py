@@ -74,6 +74,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=train_batchsize,
         class_mode="categorical",
+        shuffle=True,
+        seed=0,
         subset="training",
     )
 
@@ -83,7 +85,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=val_batchsize,
         class_mode="categorical",
-        shuffle=False,
+        shuffle=True,
+        seed=0,
         subset="validation",
     )
 
