@@ -66,7 +66,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 20
+    epochs = 10
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -74,6 +74,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=train_batchsize,
         class_mode="categorical",
+        shuffle=True,
+        seed=0,
         subset="training",
     )
 
@@ -83,7 +85,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=val_batchsize,
         class_mode="categorical",
-        shuffle=False,
+        shuffle=True,
+        seed=0,
         subset="validation",
     )
 
