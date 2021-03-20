@@ -121,7 +121,7 @@ def save_classification_report(generator: DirectoryIterator, predictions: np.nda
     matrix = _conf_mat(y_true, y_pred, n_classes=n_classes)
     np.savetxt(f"{results_dir}/confusion_matrix.csv", matrix, delimiter=",")
     pd.DataFrame(matrix, index=class_names, columns=class_names).to_csv(f"{results_dir}/confusion_matrix_headers.csv", index=True)
-    report = (classification_report(y_true, y_pred, target_names=class_names, output_dict=True, zero_division=1))
+    report = (classification_report(y_true, y_pred, target_names=class_names, output_dict=True, zero_division=1))  # TODO: test zero_division
     pd.DataFrame.from_dict(report, orient='columns', dtype=None, columns=None).to_csv(f"{results_dir}/classification_metrics.csv", index=True)
 
 
