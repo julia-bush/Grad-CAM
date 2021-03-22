@@ -10,7 +10,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -130,8 +130,9 @@ def run(dataset_name: str, epochs: int) -> None:
 
     predictions, truths = predictions_with_truths(model, validation_generator)
 
-    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
-    show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
+    class_names = sorted(set(truths).union(set(predictions)))
+    save_classification_report(y_true=truths, y_pred=predictions, results_dir=results_dir, class_names=class_names)
+    show_classification_report(y_true=truths, y_pred=predictions, class_names=class_names)
 
     # Save a sample of validation results from random batches:
 
@@ -160,17 +161,6 @@ def run(dataset_name: str, epochs: int) -> None:
         if validation_generator.batch_index == num_batches-1:
             break
 
-
-def predictions_with_truths(model, validation_generator):
-    predictions = []
-    truths = []
-    for image, label in tqdm(validation_generator):
-        model.predict(image)
-        predictions += list(np.argmax(model.predict(image), axis=1))
-        truths += list(np.argmax(label, axis=1))
-        if len(predictions) >= len(validation_generator.classes):
-            break
-    return predictions, truths
 
 if __name__ == '__main__':
     parser = ArgumentParser()
