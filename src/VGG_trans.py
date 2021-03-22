@@ -1,4 +1,5 @@
 from pathlib import Path
+from argparse import ArgumentParser
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +13,7 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 from utils import setup_directories, folder_names_in_path, show_classification_report, save_classification_report
 
 
-def run():
+def run(args):
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -23,7 +24,7 @@ def run():
 
     img_size = (224, 224, 3)
 
-    dataset_name = "HE_defects"
+    dataset_name = args.dataset
     nn_name = "VGG_trans"
 
     main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, nn_name=nn_name, file_path=Path(__file__))
@@ -66,7 +67,7 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 5
+    epochs = args.epochs
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -166,6 +167,9 @@ def run():
             break
 
 
-# TODO: pass dataset_name and epochs as arguments
-if __name__ == "__main__":
-    run()
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("--dataset", default="HE_defects", type=str)
+    parser.add_argument("--epochs", default=1, type=int)
+    args = parser.parse_args()
+    run(args=args)
