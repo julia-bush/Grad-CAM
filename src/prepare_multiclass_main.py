@@ -1,5 +1,5 @@
-import shutil
 from pathlib import Path
+from distutils.dir_util import copy_tree
 
 # Copies files from ../../data/HE_defects/*  ->  ../../data/multiclass/
 # Grouping classes into superclasses according to a custom-made mapping defined by HE_DEFECTS_2_MULTICLASS_MAIN_MAP
@@ -24,6 +24,6 @@ if __name__ == "__main__":
         superclass_dir = data_path / "multiclass_main" / superclass
         superclass_dir.mkdir(parents=True, exist_ok=True)
         for subclass in subclasses:
-            shutil.copytree(
-                data_path / "HE_defects" / subclass, superclass_dir, dirs_exist_ok=True
+            copy_tree(
+                data_path / "HE_defects" / subclass, superclass_dir
             )
