@@ -128,11 +128,7 @@ def run(dataset_name: str, epochs: int) -> None:
     plt.savefig(f"{results_dir}/learning_curve.png")
     plt.close()
 
-    predictions = model.predict(
-        validation_generator,
-        steps=validation_generator.samples / validation_generator.batch_size,
-        verbose=1,
-    )
+    predictions, truths = predictions_with_truths(model, validation_generator)
 
     save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
     show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
@@ -164,6 +160,17 @@ def run(dataset_name: str, epochs: int) -> None:
         if validation_generator.batch_index == num_batches-1:
             break
 
+
+def predictions_with_truths(model, validation_generator):
+    predictions = []
+    truths = []
+    for image, label in tqdm(validation_generator):
+        model.predict(image)
+        predictions += list(np.argmax(model.predict(image), axis=1))
+        truths += list(np.argmax(label, axis=1))
+        if len(predictions) >= len(validation_generator.classes):
+            break
+    return predictions, truths
 
 if __name__ == '__main__':
     parser = ArgumentParser()
