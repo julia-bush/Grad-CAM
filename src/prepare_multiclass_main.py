@@ -25,5 +25,5 @@ if __name__ == "__main__":
         superclass_dir.mkdir(parents=True, exist_ok=True)
         for subclass in subclasses:
             shutil.copytree(
-                data_path / "HE_defects" / subclass, superclass_dir
+                data_path / "HE_defects" / subclass, superclass_dir, dirs_exist_ok=True
             )
