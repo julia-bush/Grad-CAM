@@ -10,7 +10,7 @@ from tensorflow.compat.v1.keras.backend import set_session
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories
+from utils import setup_directories, load_generator_truths
 
 # GPU config works for both one or two GPUs
 physical_devices = tf.config.experimental.list_physical_devices("GPU")
