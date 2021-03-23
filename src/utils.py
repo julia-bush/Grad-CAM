@@ -140,13 +140,8 @@ def predictions_with_truths(model: tf.keras.Model, validation_generator: Directo
 
 def save_generator_truths(validation_generator: DirectoryIterator, pred_dir: Path) -> None:
     """ Records which dataset instances were set aside for validation by validation_split of the ImageDataGenerator.
-    After the model is trained and saved, use the following to run predictions on (samples taken from) validation
-    instances only (and not those instances which had been used for training):
-    List[str] : read_filenames = np.load(f"{pred_dir}/val_filenames.npy")
-    List[int] : read_classes = np.load(f"{pred_dir}/val_classes.npy")
-    Dict{class : label} : read_class_indices = np.load(f"{pred_dir}/val_class_indices.npy", allow_pickle='TRUE').item()
-    List[str] : read_labels = np.load(f"{pred_dir}/val_labels.npy")
-    """
+    After the model is trained and saved, load with load_generator_truths and use to run predictions on (samples taken
+    from) validation instances only (and not those instances which had been used for training)."""
     filenames = validation_generator.filenames
     np.save(f"{pred_dir}/val_filenames.npy", filenames)
     classes = validation_generator.classes
@@ -155,3 +150,20 @@ def save_generator_truths(validation_generator: DirectoryIterator, pred_dir: Pat
     np.save(f"{pred_dir}/val_class_indices.npy", class_indices)
     labels = [class_indices[x] for x in classes]
     np.save(f"{pred_dir}/val_labels.npy", labels)
+
+
+def load_generator_truths(pred_dir: Path):  # TODO: -> List[str], List[int], Dict[int, str], List[str]
+    filenames = np.load(f"{pred_dir}/val_filenames.npy").tolist()
+    classes = np.load(f"{pred_dir}/val_classes.npy").tolist()
+    class_indices = np.load(f"{pred_dir}/val_class_indices.npy", allow_pickle=True).item()
+    labels = np.load(f"{pred_dir}/val_labels.npy").tolist()
+    return filenames, classes, class_indices, labels
+
+
+# def save_generator_predictions(validation_generator: DirectoryIterator, pred_dir: Path) -> None:
+#     """ Records predicted classes for dataset instances which were set aside for validation by validation_split of the
+#     ImageDataGenerator."""
+#     for X_val, y_val in validation_generator:
+
+
+# def save_img_with_prediction(pred_dir, filenames, idx):
