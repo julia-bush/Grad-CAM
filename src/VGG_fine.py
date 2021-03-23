@@ -109,12 +109,6 @@ def run(dataset_name: str, epochs: int) -> None:
         validation_data=validation_generator
     )
 
-    predictions = model.predict(
-        validation_generator,
-        steps=validation_generator.samples / validation_generator.batch_size,
-        verbose=1,
-    )
-
     plt.figure(figsize=(8, 8))
     plt.title("Learning curve")
     plt.plot(history.history["loss"], label="loss")
