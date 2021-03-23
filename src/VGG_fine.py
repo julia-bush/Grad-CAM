@@ -1,4 +1,5 @@
 from pathlib import Path
+from argparse import ArgumentParser
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,10 +10,10 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories
+from utils import setup_directories, show_classification_report, save_classification_report
 
 
-def run():
+def run(dataset_name: str, epochs: int) -> None:
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -22,7 +23,6 @@ def run():
 
     img_size = (224, 224, 3)
 
-    dataset_name = "HE_defects"
     nn_name = "VGG_fine"
 
     main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name,
@@ -63,7 +63,6 @@ def run():
     # Change the batchsize according to your system RAM
     train_batchsize = 32
     val_batchsize = 32
-    epochs = 20
 
     # Data generator for training data
     train_generator = train_datagen.flow_from_directory(
@@ -71,6 +70,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=train_batchsize,
         class_mode="categorical",
+        shuffle=True,
+        seed=0,
         subset="training",
     )
 
@@ -80,7 +81,8 @@ def run():
         target_size=img_size[:-1],
         batch_size=val_batchsize,
         class_mode="categorical",
-        shuffle=False,
+        shuffle=True,
+        seed=0,
         subset="validation",
     )
 
@@ -92,7 +94,7 @@ def run():
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=True
+            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=False
         )
     ]
 
@@ -110,6 +112,26 @@ def run():
         steps=validation_generator.samples / validation_generator.batch_size,
         verbose=1,
     )
+
+    plt.figure(figsize=(8, 8))
+    plt.title("Learning curve")
+    plt.plot(history.history["loss"], label="loss")
+    plt.plot(history.history["val_loss"], label="val_loss")
+    plt.plot(
+        np.argmin(history.history["val_loss"]),
+        np.min(history.history["val_loss"]),
+        marker="x",
+        color="r",
+        label="best model",
+    )
+    plt.xlabel("Epochs")
+    plt.ylabel("log_loss")
+    plt.legend()
+    plt.savefig(f"{results_dir}/learning_curve.png")
+    plt.close()
+
+    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
+    show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
 
     # Save a sample of validation results from random batches:
     sample_no = 10  # sample_no >= number of batches
@@ -135,5 +157,9 @@ def run():
             break
 
 
-if __name__ == "__main__":
-    run()
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("--dataset", default="multiclass_main", type=str)
+    parser.add_argument("--epochs", default=1, type=int)
+    args = parser.parse_args()
+    run(dataset_name=args.dataset, epochs=args.epochs)
