@@ -10,7 +10,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, save_generator_truths
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -88,6 +88,8 @@ def run(dataset_name: str, epochs: int) -> None:
         seed=0,
         subset="validation",
     )
+
+    save_generator_truths(validation_generator=validation_generator, pred_dir=pred_dir)
 
     model.compile(
         loss="categorical_crossentropy",
