@@ -131,10 +131,9 @@ def predictions_with_truths(model: tf.keras.Model, validation_generator: Directo
     truths: List[str] = []
     label_number_to_name_map = {number: name for name, number in validation_generator.class_indices.items()}
     for image, label in tqdm(validation_generator):
-        # model.predict(image)
         predictions += [label_number_to_name_map[label_number] for label_number in np.argmax(model.predict(image), axis=1)]
         truths += [label_number_to_name_map[label_number] for label_number in np.argmax(label, axis=1)]
-        if len(predictions) >= 4: # len(validation_generator.classes):
+        if len(predictions) >= len(validation_generator.classes):
             break
     return predictions, truths
 
