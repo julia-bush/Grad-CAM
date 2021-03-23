@@ -10,6 +10,8 @@ from tensorflow.compat.v1.keras.backend import set_session
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
+from utils import setup_directories
+
 # GPU config works for both one or two GPUs
 physical_devices = tf.config.experimental.list_physical_devices("GPU")
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -25,14 +27,15 @@ Specify directory containing images you want to plot grad-CAM heatmaps for.
 Uses VGG16 transfer-learned on the concrete dataset.
 """
 
-dataset_name = "coarse_sample"
-test_dir = Path.cwd().parent / "data" / dataset_name
-pred_dir = Path.cwd().parent / "predictions" / dataset_name / "trans_CAM"
-Path(pred_dir).mkdir(parents=True, exist_ok=True)
-model_weights = f"{Path.cwd().parent}/models/VGG16-multi_class_HE.hdf5"
-
-no_classes = 11
 img_size = (224, 224, 3)
+
+nn_name = "VGG_trans"
+
+dataset_name = "coarse_sample"
+main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, nn_name=nn_name, file_path=Path(__file__))
+
+# get the trained model to fine-tune
+trained_model = f"{Path.cwd().parent}/models/VGG16-multi_class_HE.hdf5"
 
 # vgg_conv = tf.keras.applications.VGG16(
 #     include_top=False,
@@ -58,7 +61,7 @@ img_size = (224, 224, 3)
 #
 # model.load_weights(model_weights)
 
-model = tf.keras.models.load_model(model_weights)
+model = tf.keras.models.load_model(trained_model)
 
 model.summary()
 
