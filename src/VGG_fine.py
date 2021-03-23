@@ -10,7 +10,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -130,8 +130,11 @@ def run(dataset_name: str, epochs: int) -> None:
     plt.savefig(f"{results_dir}/learning_curve.png")
     plt.close()
 
-    save_classification_report(generator=validation_generator, predictions=predictions, results_dir=results_dir, n_classes=n_classes)
-    show_classification_report(generator=validation_generator, predictions=predictions, n_classes=n_classes)
+    predictions, truths = predictions_with_truths(model, validation_generator)
+
+    class_names = sorted(set(truths).union(set(predictions)))
+    save_classification_report(y_true=truths, y_pred=predictions, results_dir=results_dir, class_names=class_names)
+    show_classification_report(y_true=truths, y_pred=predictions, class_names=class_names)
 
     # Save a sample of validation results from random batches:
     sample_no = 10  # sample_no >= number of batches
