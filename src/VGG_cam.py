@@ -31,11 +31,11 @@ img_size = (224, 224, 3)
 
 nn_name = "VGG_trans"
 
-dataset_name = "coarse_sample"
+dataset_name = "HE_defects"
 main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, nn_name=nn_name, file_path=Path(__file__))
 
 # get the trained model to fine-tune
-trained_model = f"{Path.cwd().parent}/models/VGG16-multi_class_HE.hdf5"
+trained_model = f"{model_dir}/{nn_name}-{dataset_name}.hdf5"
 
 # vgg_conv = tf.keras.applications.VGG16(
 #     include_top=False,
@@ -65,53 +65,55 @@ model = tf.keras.models.load_model(trained_model)
 
 model.summary()
 
-for filename in os.listdir(test_dir):
+filenames, classes, class_indices, labels = load_generator_truths(pred_dir=pred_dir)
 
-    preprocessed_input = load_image(f"{test_dir}/{filename}")
+for idx, filename in enumerate(filenames):
+    preprocessed_input = load_image(f"{train_dir}/{filename}")
     predictions = model.predict(preprocessed_input)
 
     print("File: " + filename)
     print(f"Predicted class: {np.argmax(predictions)} with probability {np.max(predictions)}")
 
-    predicted_class = np.argmax(predictions)
-    class_labels = ["calcite", "corrosion", "cracks", "debonding", "erosion", "exposed reinforcement", "graffiti", "lamination", "spalling", "vegetation", "water"]
+    for prediction_number in range(1,3):  # make predictions for two highest probability classes
+        predicted_class_index = np.argsort(np.max(predictions, axis=0))[-prediction_number]
+        predicted_class_label = class_indices[predicted_class_index]
 
-    cam, heatmap = grad_cam(
-        model=model,
-        image=preprocessed_input,
-        category_index=predicted_class,
-        layer_name="block5_conv3",
-        no_classes=no_classes
-    )
-    cam = cv2.putText(
-        cam,
-        f"Class: {class_labels[predicted_class]}",
-        (5, 199),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.5,
-        (255, 255, 255),
-        1,
-        cv2.LINE_AA,
-    )
-    cam = cv2.putText(
-        cam,
-        f"Probability: {np.max(predictions)}",
-        (5, 219),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.5,
-        (255, 255, 255),
-        1,
-        cv2.LINE_AA,
-    )
-    # cv2.imwrite("gradcam.jpg", cam)
-    cv2.imwrite(f"{pred_dir}/{Path(filename).stem}_gradcam.jpg", cam)
+        cam, heatmap = grad_cam(
+            model=model,
+            image=preprocessed_input,
+            category_index=predicted_class_index,
+            layer_name="block5_conv3",
+            no_classes=n_classes
+        )
+        cam = cv2.putText(
+            cam,
+            f"Prediction {prediction_number}: {predicted_class_label}",
+            (5, 199),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA,
+        )
+        cam = cv2.putText(
+            cam,
+            f"Probability: {predictions[0][predicted_class_index]:.3f}",
+            (5, 219),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA,
+        )
+        cv2.imwrite(f"{pred_dir}/{Path(filename).stem}_gradcam_{prediction_number}.jpg", cam)
 
-    # register_gradient()
-    # guided_model = modify_backprop(model, "GuidedBackProp")
-    # saliency_fn = compile_saliency_function(guided_model)
-    # saliency = saliency_fn([preprocessed_input, 0])
-    # gradcam = saliency[0] * heatmap[..., np.newaxis]
-    # # cv2.imwrite("guided_gradcam.jpg", deprocess_image(gradcam))
-    # cv2.imwrite(
-    #     pred_dir + Path(filename).stem + "_guided_gradcam.jpg", deprocess_image(gradcam)
-    # )
+
+        # register_gradient()
+        # guided_model = modify_backprop(model, "GuidedBackProp")
+        # saliency_fn = compile_saliency_function(guided_model)
+        # saliency = saliency_fn([preprocessed_input, 0])
+        # gradcam = saliency[0] * heatmap[..., np.newaxis]
+        # # cv2.imwrite("guided_gradcam.jpg", deprocess_image(gradcam))
+        # cv2.imwrite(
+        #     pred_dir + Path(filename).stem + "_guided_gradcam.jpg", deprocess_image(gradcam)
+        # )
