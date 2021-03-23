@@ -87,6 +87,16 @@ for idx, filename in enumerate(filenames):
         )
         cam = cv2.putText(
             cam,
+            f"Ground truth: {labels[idx]}",
+            (5, 179),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA,
+        )
+        cam = cv2.putText(
+            cam,
             f"Prediction {prediction_number}: {predicted_class_label}",
             (5, 199),
             cv2.FONT_HERSHEY_SIMPLEX,
