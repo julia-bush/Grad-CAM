@@ -158,12 +158,3 @@ def load_generator_truths(pred_dir: Path):  # TODO: -> List[str], List[int], Dic
     class_indices = np.load(f"{pred_dir}/val_class_indices.npy", allow_pickle=True).item()
     labels = np.load(f"{pred_dir}/val_labels.npy").tolist()
     return filenames, classes, class_indices, labels
-
-
-# def save_generator_predictions(validation_generator: DirectoryIterator, pred_dir: Path) -> None:
-#     """ Records predicted classes for dataset instances which were set aside for validation by validation_split of the
-#     ImageDataGenerator."""
-#     for X_val, y_val in validation_generator:
-
-
-# def save_img_with_prediction(pred_dir, filenames, idx):
