@@ -51,7 +51,8 @@ def run(dataset_name: str, nn_name: str) -> None:
         print("File: " + filename)
         print(f"Predicted class: {np.argmax(predictions)} with probability {np.max(predictions)}")
 
-        for prediction_number in range(1,3):  # make predictions for two highest probability classes
+        highest_probability_classes = [1, 2]
+        for prediction_number in highest_probability_classes:
             predicted_class_index = np.argsort(np.max(predictions, axis=0))[-prediction_number]
             predicted_class_label = class_indices[predicted_class_index]
 
