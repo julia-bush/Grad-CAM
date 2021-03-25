@@ -6,6 +6,7 @@ import tensorflow as tf
 import tensorflow.keras
 import tensorflow.keras.backend as K
 from keras_preprocessing.image import ImageDataGenerator
+from matplotlib import pyplot as plt
 from pathlib import Path
 from sklearn.metrics import classification_report
 from tensorflow.keras.applications.vgg16 import (
@@ -127,14 +128,14 @@ def _get_ordered_class_names(train_generator: DirectoryIterator) -> List[str]:
     return [next(k for k, v in labels_dict.items() if v == i) for i in range(n_classes)]
 
 
-def predictions_with_truths(model: tf.keras.Model, validation_generator: DirectoryIterator) -> Tuple[List[str], List[str]]:
+def predictions_with_truths(model: tf.keras.Model, validation_generator: DirectoryIterator, max_preds: int = np.Inf) -> Tuple[List[str], List[str]]:
     predictions: List[str] = []
     truths: List[str] = []
     label_number_to_name_map = {number: name for name, number in validation_generator.class_indices.items()}
     for image, label in tqdm(validation_generator):
         predictions += [label_number_to_name_map[label_number] for label_number in np.argmax(model.predict(image), axis=1)]
         truths += [label_number_to_name_map[label_number] for label_number in np.argmax(label, axis=1)]
-        if len(predictions) >= len(validation_generator.classes):
+        if len(predictions) >= min(max_preds, len(validation_generator.classes)):
             break
     return predictions, truths
 
@@ -204,3 +205,22 @@ def _data_generator(target_size, batchsize, datagen, data_dir, subset):
         shuffle=False,
     )
     return train_generator
+
+
+def plot_learning_curve(train_history, val_history, results_dir):
+    plt.figure(figsize=(8, 8))
+    plt.title("Learning curve")
+    plt.plot(train_history, label="loss")
+    plt.plot(val_history, label="val_loss")
+    plt.plot(
+        np.argmin(val_history),
+        np.min(val_history),
+        marker="x",
+        color="r",
+        label="best model",
+    )
+    plt.xlabel("Epochs")
+    plt.ylabel("log_loss")
+    plt.legend()
+    plt.savefig(f"{results_dir}/learning_curve.png")
+    plt.close()

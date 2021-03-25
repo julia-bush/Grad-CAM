@@ -1,15 +1,14 @@
-import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 
-import numpy as np
 import tensorflow as tf
 from pathlib import Path
 from tensorflow.compat.v1.keras.backend import set_session
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-from utils import setup_directories, show_classification_report, save_classification_report, make_data_generators
 from mobilenet import make_mobilenet_with_new_head
-from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, save_generator_truths
+from utils import (make_data_generators, plot_learning_curve,
+                   predictions_with_truths, save_classification_report,
+                   setup_directories, show_classification_report)
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -36,40 +35,35 @@ def run(dataset_name: str, epochs: int) -> None:
 
     train_generator, validation_generator = make_data_generators(train_dir, img_size[:-1], train_batchsize, val_batchsize, tf.keras.applications.mobilenet.preprocess_input)
 
+    validation_loss_history = []
+    train_loss_history = []
+
+    def _learning_curve_callback(_, logs):
+        nonlocal validation_loss_history, train_loss_history, results_dir
+        validation_loss_history += [logs['val_loss']]
+        train_loss_history += [logs['loss']]
+        plot_learning_curve(train_history=train_loss_history, val_history=validation_loss_history, results_dir=results_dir)
+
     callbacks = [
         ModelCheckpoint(
             model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
-        )
+        ),
+        tf.python.keras.callbacks.LambdaCallback(on_epoch_end=_learning_curve_callback)
     ]
 
     history = model.fit_generator(
         generator=train_generator,
         steps_per_epoch=train_generator.samples // train_generator.batch_size,
-        # steps_per_epoch=100,
+        # steps_per_epoch=10,
         epochs=epochs,
         verbose=1,
         callbacks=callbacks,
         validation_data=validation_generator,
         validation_steps=validation_generator.samples // validation_generator.batch_size
-        # validation_steps=100
+        # validation_steps=10
     )
 
-    plt.figure(figsize=(8, 8))
-    plt.title("Learning curve")
-    plt.plot(history.history["loss"], label="loss")
-    plt.plot(history.history["val_loss"], label="val_loss")
-    plt.plot(
-        np.argmin(history.history["val_loss"]),
-        np.min(history.history["val_loss"]),
-        marker="x",
-        color="r",
-        label="best model",
-    )
-    plt.xlabel("Epochs")
-    plt.ylabel("log_loss")
-    plt.legend()
-    plt.savefig(f"{results_dir}/learning_curve.png")
-    plt.close()
+    plot_learning_curve(train_history=history["loss"], val_history=history["val_loss"], results_dir=results_dir)
 
     predictions, truths = predictions_with_truths(model, validation_generator)
 
@@ -81,7 +75,7 @@ def run(dataset_name: str, epochs: int) -> None:
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", default="multiclass_main", type=str)
-    parser.add_argument("--epochs", default=1, type=int)
+    parser.add_argument("--epochs", default=10, type=int)
     args = parser.parse_args()
     run(dataset_name=args.dataset, epochs=args.epochs)
 
