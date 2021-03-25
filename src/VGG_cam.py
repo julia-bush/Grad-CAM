@@ -38,30 +38,6 @@ def run(dataset_name: str, nn_name: str) -> None:
     # get the trained model to fine-tune
     trained_model = f"{model_dir}/{nn_name}-{dataset_name}.hdf5"
 
-    # vgg_conv = tf.keras.applications.VGG16(
-    #     include_top=False,
-    #     weights=None,
-    #     input_tensor=None,
-    #     input_shape=img_size,
-    #     pooling=None
-    # )
-    #
-    # print(vgg_conv.summary())
-    #
-    # model = Sequential()
-    #
-    # for layer in vgg_conv.layers[:]:
-    #     model.add(layer)
-    #
-    # model.add(Flatten())
-    # # model.add(Dense(128, activation="relu"))
-    # # model.add(Dropout(0.5))
-    # model.add(Dense(no_classes, activation="softmax"))
-    #
-    # model.summary()
-    #
-    # model.load_weights(model_weights)
-
     model = tf.keras.models.load_model(trained_model)
 
     model.summary()
