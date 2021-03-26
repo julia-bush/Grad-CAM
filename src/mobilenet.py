@@ -21,10 +21,11 @@ def make_mobilenet_with_new_head(n_classes: int):
 
     model = tf.keras.Sequential([
         base_net,
-        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dropout(0.5),
         tf.keras.layers.GlobalAveragePooling2D(),
-        tf.keras.layers.Dense(128, activation='softmax'),
-        tf.keras.layers.Dense(128, activation='softmax'),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(n_classes, activation='softmax')
     ])
 

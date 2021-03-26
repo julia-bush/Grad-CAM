@@ -61,3 +61,11 @@ Epoch 00001: val_loss improved from inf to 1.06339, saving model to C:\Users\tad
 55724/55724 [==============================] - 1111s 20ms/step - loss: 1.0874 - acc: 0.3899 - val_loss: 1.0634 - val_acc: 0.5225
 # class 2 never predicted
 # remove data aug, set batch size back to 4
+10 Epoch CM: [[3718  315  411] [ 446 4406 1215] [ 511  594 2313]]
+13931/13931 [==============================] - 311s 22ms/step - loss: 0.7033 - acc: 0.7144 - val_loss: 0.6398 - val_acc: 0.7493
+# change softmax->relu from hidden layers, dropout 0.2 -> 0.5
+# still underfitting (val acc >> train acc)
+# incr. complexity to gpa-1024-1024-512
+# performance issues, reducing complexity
+# quickly overfits
+# reducing complexity to mnet_do05_ga2_d128relu_d128relu_d128relu

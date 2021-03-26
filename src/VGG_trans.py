@@ -4,6 +4,7 @@ import tensorflow as tf
 from pathlib import Path
 from tensorflow.compat.v1.keras.backend import set_session
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.python.keras.models import load_model
 
 from mobilenet import make_mobilenet_with_new_head
 from utils import (make_data_generators, plot_learning_curve,
@@ -11,7 +12,7 @@ from utils import (make_data_generators, plot_learning_curve,
                    setup_directories, show_classification_report)
 
 
-def run(dataset_name: str, epochs: int) -> None:
+def run(dataset_name: str, epochs: int, finetune_net: str = "") -> None:
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -30,11 +31,15 @@ def run(dataset_name: str, epochs: int) -> None:
     train_batchsize = 4
     val_batchsize = 4
 
-    model = make_mobilenet_with_new_head(n_classes)
+    if finetune_net:
+        model = load_model(finetune_net)
+    else:
+        model = make_mobilenet_with_new_head(n_classes)
 
     train_generator, validation_generator = make_data_generators(train_dir, img_size[:-1], train_batchsize, val_batchsize, tf.keras.applications.mobilenet.preprocess_input)
 
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=results_dir / "tensorboard", histogram_freq=0, write_graph=True, write_images=False)
+    experiment_summary = f"mnet_do05_ga2_d128relu_d128relu_d128relu"
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=results_dir / "tensorboard" / experiment_summary, histogram_freq=0, write_graph=True, write_images=False)
 
     callbacks = [
         ModelCheckpoint(
@@ -46,16 +51,16 @@ def run(dataset_name: str, epochs: int) -> None:
     history = model.fit_generator(
         generator=train_generator,
         steps_per_epoch=train_generator.samples // train_generator.batch_size,
-        # steps_per_epoch=100,
+        # steps_per_epoch=1000,
         epochs=epochs,
         verbose=1,
         callbacks=callbacks,
         validation_data=validation_generator,
         validation_steps=validation_generator.samples // validation_generator.batch_size
-        # validation_steps=100
+        # validation_steps=1000
     )
 
-    plot_learning_curve(train_history=history.history["loss"]["loss"], val_history=history.history["loss"]["val_loss"], results_dir=results_dir)
+    plot_learning_curve(train_history=history.history["loss"], val_history=history.history["val_loss"], results_dir=results_dir)
 
     predictions, truths = predictions_with_truths(model, validation_generator)
 
@@ -67,8 +72,9 @@ def run(dataset_name: str, epochs: int) -> None:
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", default="multiclass_main", type=str)
-    parser.add_argument("--epochs", default=10, type=int)
+    parser.add_argument("--epochs", default=30, type=int)
+    parser.add_argument("--finetune", default="mobilenet_trans-multiclass_main")
     args = parser.parse_args()
-    run(dataset_name=args.dataset, epochs=args.epochs)
+    run(dataset_name=args.dataset, epochs=args.epochs, finetune_net=args.finetune)
 
 
