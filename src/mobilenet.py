@@ -31,7 +31,7 @@ def make_mobilenet_with_new_head(n_classes: int):
     model.compile(
         loss="categorical_crossentropy",
         optimizer=tf.keras.optimizers.Adam(lr=1e-4),
-        metrics=["acc"],
+        metrics=["acc"]
     )
 
     return model
