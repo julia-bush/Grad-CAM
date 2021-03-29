@@ -48,10 +48,10 @@ def run(dataset_name: str, epochs: int, finetune_net: str = "", experiment_summa
 
     history = model.fit_generator(
         generator=train_generator,
-        # steps_per_epoch=train_generator.samples // train_generator.batch_size,
-        # validation_steps=validation_generator.samples // validation_generator.batch_size
-        steps_per_epoch=10,
-        validation_steps=10,
+        steps_per_epoch=train_generator.samples // train_generator.batch_size,
+        validation_steps=validation_generator.samples // validation_generator.batch_size,
+        # steps_per_epoch=10,  # kept for debugging convenience
+        # validation_steps=10,
         epochs=epochs,
         verbose=1,
         callbacks=callbacks,
