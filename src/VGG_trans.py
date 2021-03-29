@@ -43,7 +43,7 @@ def run(dataset_name: str, epochs: int, finetune_net: str = "", experiment_summa
 
     callbacks = [
         ModelCheckpoint(model_dir / "model.hdf5", verbose=1, save_weights_only=False, save_best_only=True),
-        # tensorboard_callback
+        tensorboard_callback
     ]
 
     history = model.fit_generator(
