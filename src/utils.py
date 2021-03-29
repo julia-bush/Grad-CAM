@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 import numpy as np
+import pandas
 import pandas as pd
 import tensorflow as tf
 import tensorflow.keras
@@ -85,15 +86,15 @@ def deprocess_image(x):
     return x
 
 
-def setup_directories(dataset_name, nn_name, file_path):
+def setup_directories(dataset_name, file_path, experiment_summary):
     main_dir = file_path.parent.parent
     train_dir = main_dir / "data" / dataset_name
     n_classes = len(folder_names_in_path(train_dir))
-    model_dir = main_dir / "models" / dataset_name / nn_name
+    model_dir = main_dir / "models" / dataset_name / experiment_summary
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    results_dir = main_dir / "results" / dataset_name / nn_name
+    results_dir = main_dir / "results" / dataset_name / experiment_summary
     Path(results_dir).mkdir(parents=True, exist_ok=True)
-    pred_dir = main_dir / "predictions/" / dataset_name / nn_name
+    pred_dir = main_dir / "predictions/" / dataset_name / experiment_summary
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
     return main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes
 
@@ -162,7 +163,6 @@ def load_generator_truths(pred_dir: Path):  # TODO: -> List[str], List[int], Dic
     return filenames, classes, class_indices, labels
 
 
-
 def make_data_generators(train_dir, target_size, train_batchsize, val_batchsize, preprocessing_function, validation_split = 0.2):
     """ Creates train and validation data generators with the same preprocessing.
     Train generator includes data augmentation
@@ -223,4 +223,8 @@ def plot_learning_curve(train_history, val_history, results_dir):
     plt.ylabel("log_loss")
     plt.legend()
     plt.savefig(f"{results_dir}/learning_curve.png")
+    plt.savefig(f"{results_dir}/learning_curve.svg")
+
+    # Save history, so we can replot/posthoc style
+    pandas.DataFrame({"train_history": train_history, "val_history": val_history, "epoch": range(len(train_history))}).to_csv(results_dir / "train_history.csv", index=False)
     plt.close()
