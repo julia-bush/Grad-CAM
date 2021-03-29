@@ -73,7 +73,7 @@ if __name__ == '__main__':
     parser.add_argument("--epochs", default=10, type=int)
     parser.add_argument("--finetune", default="", help="file with the net model to finetune")
     # parser.add_argument("--finetune", default="mobilenet_trans-multiclass_main.hdf5")
-    parser.add_argument("--summary", default="test", help="key to identify experiment when comparing to other runs on the same dataset")
+    parser.add_argument("--summary", default="mnet_do05_gp2d_d128relu_d128relu", help="key to identify experiment when comparing to other runs on the same dataset")
     args = parser.parse_args()
     run(
         dataset_name=args.dataset,
