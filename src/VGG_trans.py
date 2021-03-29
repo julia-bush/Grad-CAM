@@ -7,8 +7,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.python.keras.models import load_model
 
 from mobilenet import make_mobilenet_with_new_head
-from src.utils import save_train_history
-from utils import (make_data_generators, plot_learning_curve,
+from utils import (make_data_generators, save_history_results,
                    predictions_with_truths, save_classification_report,
                    setup_directories, show_classification_report)
 
@@ -59,12 +58,11 @@ def run(dataset_name: str, epochs: int, finetune_net: str = "", experiment_summa
         validation_data=validation_generator,
     )
 
-    plot_learning_curve(train_history=history.history["loss"], val_history=history.history["val_loss"], results_dir=results_dir / experiment_summary)
+    save_history_results(train_history=history.history["loss"], val_history=history.history["val_loss"], results_dir=results_dir)
 
     predictions, truths = predictions_with_truths(model, validation_generator)
 
     class_names = sorted(set(truths).union(set(predictions)))
-    save_train_history(history, results_dir / "history" / experiment_summary)
     save_classification_report(y_true=truths, y_pred=predictions, results_dir=results_dir, class_names=class_names)
     show_classification_report(y_true=truths, y_pred=predictions, class_names=class_names)
 
