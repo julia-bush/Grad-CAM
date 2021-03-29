@@ -207,7 +207,7 @@ def _data_generator(target_size, batchsize, datagen, data_dir, subset):
     return train_generator
 
 
-def plot_learning_curve(train_history, val_history, results_dir):
+def save_history_results(train_history, val_history, results_dir):
     plt.figure(figsize=(8, 8))
     plt.title("Learning curve")
     plt.plot(train_history, label="loss")
