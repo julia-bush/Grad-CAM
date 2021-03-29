@@ -30,7 +30,7 @@ def run(dataset_name: str, epochs: int, finetune_net: str = "", experiment_summa
     val_batchsize = 4
 
     if finetune_net:
-        model = load_model(model_dir / finetune_net)
+        model = load_model(model_dir.parent / finetune_net)
         for layer in model.layers[0].layers:
             layer.trainable = True
     else:
@@ -71,8 +71,8 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", default="multiclass_main", type=str)
     parser.add_argument("--epochs", default=10, type=int)
-    parser.add_argument("--finetune", default="", help="file with the net model to finetune")
-    # parser.add_argument("--finetune", default="mobilenet_trans-multiclass_main.hdf5")
+    # parser.add_argument("--finetune", default="", help="file with the net model to finetune, empty to disable finetuning")
+    parser.add_argument("--finetune", default="mnet_do05_gp2d_d128relu_d128relu/model.hdf5")
     parser.add_argument("--summary", default="mnet_do05_gp2d_d128relu_d128relu", help="key to identify experiment when comparing to other runs on the same dataset")
     args = parser.parse_args()
     run(
@@ -82,4 +82,5 @@ if __name__ == '__main__':
         experiment_summary=args.summary + ("_finetune" if args.finetune else "")
     )
 
-    # to monitor: tensorboard --logdir results
+    # to monitor: tensorboard --logdir results\multiclass_main\tensorboard
+
