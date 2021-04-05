@@ -5,14 +5,17 @@ from matplotlib import cm as cm
 from tensorflow import keras
 
 
-def get_img_array(img_path, size):
+"""these functions are called from grad_cam.py only"""
+
+
+def _get_img_array(img_path, size):
     img = keras.preprocessing.image.load_img(img_path, target_size=size)
     array = keras.preprocessing.image.img_to_array(img)
     array = np.expand_dims(array, axis=0)
     return array
 
 
-def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
+def _make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
     # collect the necessary tf.Variables into keras.Model, subclass of tf.Module, for convenience
     grad_model = tf.keras.models.Model(
         [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
@@ -41,7 +44,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
     return heatmap.numpy()
 
 
-def colour_heatmap(heatmap, colourmap="jet"):
+def _colour_heatmap(heatmap, colourmap="jet"):
     scaled_heatmap = np.uint8(255 * heatmap)
     cmap = cm.get_cmap(colourmap)
     cmap_colors = cmap(np.arange(256))[:, :3]
@@ -49,7 +52,7 @@ def colour_heatmap(heatmap, colourmap="jet"):
     return cmap_heatmap
 
 
-def superimpose_heatmap(img_path, heatmap, alpha):
+def _superimpose_heatmap(img_path, heatmap, alpha):
     img = keras.preprocessing.image.load_img(img_path)
     img = keras.preprocessing.image.img_to_array(img)
     heatmap = keras.preprocessing.image.array_to_img(heatmap)
@@ -60,9 +63,9 @@ def superimpose_heatmap(img_path, heatmap, alpha):
     return superimposed_img
 
 
-def save_superimposed_heatmap(img_path, heatmap, cam_path, colourmap="jet", alpha=0.4, legend=None):
-    cmap_heatmap = colour_heatmap(heatmap=heatmap, colourmap=colourmap)
-    superimposed_img = superimpose_heatmap(img_path=img_path, heatmap=cmap_heatmap, alpha=alpha)
+def _save_superimposed_heatmap(img_path, heatmap, cam_path, colourmap="jet", alpha=0.4, legend=None):
+    cmap_heatmap = _colour_heatmap(heatmap=heatmap, colourmap=colourmap)
+    superimposed_img = _superimpose_heatmap(img_path=img_path, heatmap=cmap_heatmap, alpha=alpha)
     if legend is not None:
         draw = ImageDraw.Draw(superimposed_img)
         font = ImageFont.truetype("arial.ttf", 18)

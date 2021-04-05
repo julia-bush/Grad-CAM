@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from grad_cam_utils import get_img_array, make_gradcam_heatmap, colour_heatmap, superimpose_heatmap, save_superimposed_heatmap
+from grad_cam_utils import _get_img_array, _make_gradcam_heatmap, _colour_heatmap, _superimpose_heatmap, _save_superimposed_heatmap
 
 """
 Once you have a trained classifier model, you can run classification predictions and visualise which image regions have
@@ -31,7 +31,7 @@ last_conv_layer_name = "block5_conv3"
 for filepath in test_dir.glob("*"):
 
     filename = filepath.name
-    img_array = preprocess_input(get_img_array(filepath, size=img_size))
+    img_array = preprocess_input(_get_img_array(filepath, size=img_size))
 
     preds = model.predict(img_array)
     probas = tf.nn.softmax(preds).numpy()
@@ -39,6 +39,6 @@ for filepath in test_dir.glob("*"):
 
     for idx, pred_index in enumerate(top_two_preds_indices):
         cam_path = f"{pred_dir}/{idx}_{filename}"  # TODO: decide how to index filenames for different predicted classes
-        heatmap = make_gradcam_heatmap(img_array=img_array, model=model, last_conv_layer_name=last_conv_layer_name, pred_index=pred_index)
+        heatmap = _make_gradcam_heatmap(img_array=img_array, model=model, last_conv_layer_name=last_conv_layer_name, pred_index=pred_index)
         legend = f"Predicted {class_labels[pred_index]} with probability {probas[0][pred_index]:.4f}"
-        save_superimposed_heatmap(img_path=filepath, heatmap=heatmap, cam_path=cam_path, legend=legend)
+        _save_superimposed_heatmap(img_path=filepath, heatmap=heatmap, cam_path=cam_path, legend=legend)
