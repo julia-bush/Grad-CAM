@@ -10,7 +10,7 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, save_generator_truths
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -89,6 +89,8 @@ def run(dataset_name: str, epochs: int) -> None:
         subset="validation",
     )
 
+    save_generator_truths(validation_generator=validation_generator, pred_dir=pred_dir)
+
     model.compile(
         loss="categorical_crossentropy",
         optimizer=optimizers.Adam(lr=1e-4),
@@ -133,33 +135,6 @@ def run(dataset_name: str, epochs: int) -> None:
     class_names = sorted(set(truths).union(set(predictions)))
     save_classification_report(y_true=truths, y_pred=predictions, results_dir=results_dir, class_names=class_names)
     show_classification_report(y_true=truths, y_pred=predictions, class_names=class_names)
-
-    # Save a sample of validation results from random batches:
-
-    sample_no = 1000
-    num_batches = validation_generator.n // val_batchsize
-    # take at most one sample from every batch:
-    if sample_no > num_batches:
-        sample_no = num_batches
-    batch_sample_idx = np.random.randint(low=0, high=num_batches, size=sample_no)
-    for X_val, y_val in validation_generator:
-        if validation_generator.batch_index in batch_sample_idx:
-            random_sample_idx = np.random.randint(low=0, high=val_batchsize)
-            X_val_sample_img = X_val[random_sample_idx, :]
-            random_sample_pred_idx = random_sample_idx + validation_generator.batch_index * val_batchsize
-            pred_class = np.argmax(predictions[random_sample_pred_idx])
-            pred_label = list(validation_generator.class_indices.keys())[pred_class]
-            title = "Prediction : {}, confidence : {:.3f}".format(
-                pred_label, predictions[random_sample_pred_idx][pred_class]
-            )
-            plt.figure(figsize=[7, 7])
-            plt.axis("off")
-            plt.title(title)
-            plt.imshow(X_val_sample_img)
-            plt.savefig(f"{pred_dir}/val_sample_{random_sample_pred_idx}.jpg")
-            plt.close()
-        if validation_generator.batch_index == num_batches-1:
-            break
 
 
 if __name__ == '__main__':
