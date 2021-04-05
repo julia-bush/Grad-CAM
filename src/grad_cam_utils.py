@@ -1,21 +1,29 @@
+from pathlib import Path
+from typing import Tuple
+
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 from PIL import ImageDraw, ImageFont
 from matplotlib import cm as cm
 from tensorflow import keras
 
-
 """these functions are called from grad_cam.py only"""
 
 
-def _get_img_array(img_path, size):
+def _get_img_array(img_path: Path, size: Tuple) -> np.ndarray:
     img = keras.preprocessing.image.load_img(img_path, target_size=size)
     array = keras.preprocessing.image.img_to_array(img)
     array = np.expand_dims(array, axis=0)
     return array
 
 
-def _make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
+def _make_gradcam_heatmap(
+    img_array: np.ndarray,
+    model: tf.keras.Model,
+    last_conv_layer_name: str,
+    pred_index: int = -1,
+) -> np.ndarray:
     # collect the necessary tf.Variables into keras.Model, subclass of tf.Module, for convenience
     grad_model = tf.keras.models.Model(
         [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
@@ -24,9 +32,11 @@ def _make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=Non
     # record forward pass operations on a tf.GradientTape for automatic differentiation
     with tf.GradientTape() as tape:
         last_conv_layer_output, preds = grad_model(img_array)
-        if pred_index is None:
+        if pred_index == -1:
             pred_index = tf.argmax(preds[0])
-        class_channel = preds[:, pred_index]  # chosen class prediction before softmax TODO: better var name
+        class_channel = preds[
+            :, pred_index
+        ]  # chosen class prediction before softmax TODO: better var name
 
     # d(class_channel)/d(last_conv_layer_output), i.e.
     # how sensitive is class_channel to changes in last_conv_layer_output
@@ -44,7 +54,7 @@ def _make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=Non
     return heatmap.numpy()
 
 
-def _colour_heatmap(heatmap, colourmap="jet"):
+def _colour_heatmap(heatmap: np.ndarray, colourmap: str = "jet") -> np.ndarray:
     scaled_heatmap = np.uint8(255 * heatmap)
     cmap = cm.get_cmap(colourmap)
     cmap_colors = cmap(np.arange(256))[:, :3]
@@ -52,7 +62,7 @@ def _colour_heatmap(heatmap, colourmap="jet"):
     return cmap_heatmap
 
 
-def _superimpose_heatmap(img_path, heatmap, alpha):
+def _superimpose_heatmap(img_path: Path, heatmap: np.ndarray, alpha: float) -> Image:
     img = keras.preprocessing.image.load_img(img_path)
     img = keras.preprocessing.image.img_to_array(img)
     heatmap = keras.preprocessing.image.array_to_img(heatmap)
@@ -63,9 +73,18 @@ def _superimpose_heatmap(img_path, heatmap, alpha):
     return superimposed_img
 
 
-def _save_superimposed_heatmap(img_path, heatmap, cam_path, colourmap="jet", alpha=0.4, legend=None):
+def _save_superimposed_heatmap(
+    img_path: Path,
+    heatmap: np.ndarray,
+    cam_path: str,
+    colourmap: str = "jet",
+    alpha: float = 0.4,
+    legend: str = None,
+) -> None:
     cmap_heatmap = _colour_heatmap(heatmap=heatmap, colourmap=colourmap)
-    superimposed_img = _superimpose_heatmap(img_path=img_path, heatmap=cmap_heatmap, alpha=alpha)
+    superimposed_img = _superimpose_heatmap(
+        img_path=img_path, heatmap=cmap_heatmap, alpha=alpha
+    )
     if legend is not None:
         draw = ImageDraw.Draw(superimposed_img)
         font = ImageFont.truetype("arial.ttf", 18)

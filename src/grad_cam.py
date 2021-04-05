@@ -4,7 +4,11 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from grad_cam_utils import _get_img_array, _make_gradcam_heatmap, _colour_heatmap, _superimpose_heatmap, _save_superimposed_heatmap
+from grad_cam_utils import (
+    _get_img_array,
+    _make_gradcam_heatmap,
+    _save_superimposed_heatmap,
+)
 
 """
 Once you have a trained classifier model, you can run classification predictions and visualise which image regions have
@@ -22,8 +26,14 @@ Path(pred_dir).mkdir(parents=True, exist_ok=True)
 trained_model = f"{Path.cwd().parent}/models/VGG_trans-multiclass_main.hdf5"
 
 model = tf.keras.models.load_model(trained_model)
-model.layers[-1].activation = None  # remove softmax to circumvent near-zero probabilities
-class_labels = ["corrosion", "crack", "spalling"]  # TODO: read these from file saved during model training
+model.layers[
+    -1
+].activation = None  # remove softmax to circumvent near-zero probabilities
+class_labels = [
+    "corrosion",
+    "crack",
+    "spalling",
+]  # TODO: read these from file saved during model training
 img_size = (224, 224)
 preprocess_input = keras.applications.vgg16.preprocess_input
 last_conv_layer_name = "block5_conv3"
@@ -31,7 +41,7 @@ last_conv_layer_name = "block5_conv3"
 for filepath in test_dir.glob("*"):
 
     filename = filepath.name
-    img_array = preprocess_input(_get_img_array(filepath, size=img_size))
+    img_array = preprocess_input(_get_img_array(img_path=filepath, size=img_size))
 
     preds = model.predict(img_array)
     probas = tf.nn.softmax(preds).numpy()
@@ -39,6 +49,13 @@ for filepath in test_dir.glob("*"):
 
     for idx, pred_index in enumerate(top_two_preds_indices):
         cam_path = f"{pred_dir}/{idx}_{filename}"  # TODO: decide how to index filenames for different predicted classes
-        heatmap = _make_gradcam_heatmap(img_array=img_array, model=model, last_conv_layer_name=last_conv_layer_name, pred_index=pred_index)
+        heatmap = _make_gradcam_heatmap(
+            img_array=img_array,
+            model=model,
+            last_conv_layer_name=last_conv_layer_name,
+            pred_index=pred_index,
+        )
         legend = f"Predicted {class_labels[pred_index]} with probability {probas[0][pred_index]:.4f}"
-        _save_superimposed_heatmap(img_path=filepath, heatmap=heatmap, cam_path=cam_path, legend=legend)
+        _save_superimposed_heatmap(
+            img_path=filepath, heatmap=heatmap, cam_path=cam_path, legend=legend
+        )
