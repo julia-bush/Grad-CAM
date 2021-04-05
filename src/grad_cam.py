@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import numpy as np
@@ -29,10 +28,10 @@ img_size = (224, 224)
 preprocess_input = keras.applications.vgg16.preprocess_input
 last_conv_layer_name = "block5_conv3"
 
-for filename in os.listdir(test_dir):
+for filepath in test_dir.glob("*"):
 
-    img_path = f"{test_dir}/{filename}"
-    img_array = preprocess_input(get_img_array(img_path, size=img_size))
+    filename = filepath.name
+    img_array = preprocess_input(get_img_array(filepath, size=img_size))
 
     preds = model.predict(img_array)
     probas = tf.nn.softmax(preds).numpy()
@@ -42,4 +41,4 @@ for filename in os.listdir(test_dir):
         cam_path = f"{pred_dir}/{idx}_{filename}"  # TODO: decide how to index filenames for different predicted classes
         heatmap = make_gradcam_heatmap(img_array=img_array, model=model, last_conv_layer_name=last_conv_layer_name, pred_index=pred_index)
         legend = f"Predicted {class_labels[pred_index]} with probability {probas[0][pred_index]:.4f}"
-        save_superimposed_heatmap(img_path=img_path, heatmap=heatmap, cam_path=cam_path, legend=legend)
+        save_superimposed_heatmap(img_path=filepath, heatmap=heatmap, cam_path=cam_path, legend=legend)
