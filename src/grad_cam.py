@@ -3,7 +3,6 @@ from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
-from scipy.special import softmax
 from tensorflow import keras
 
 from grad_cam_utils import get_img_array, make_gradcam_heatmap, colour_heatmap, superimpose_heatmap, save_superimposed_heatmap
@@ -36,7 +35,7 @@ for filename in os.listdir(test_dir):
     img_array = preprocess_input(get_img_array(img_path, size=img_size))
 
     preds = model.predict(img_array)
-    probas = softmax(preds)
+    probas = tf.nn.softmax(preds).numpy()
     top_two_preds_indices = np.argsort(-preds)[0][:2]
 
     for idx, pred_index in enumerate(top_two_preds_indices):
