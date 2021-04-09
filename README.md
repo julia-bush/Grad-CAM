@@ -2,7 +2,7 @@
 
 Original paper: https://openaccess.thecvf.com/content_ICCV_2017/papers/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.pdf
 
-This implementation is based on https://github.com/jacobgil/keras-grad-cam
+This implementation is based on https://keras.io/examples/vision/grad_cam/
 
 Work in progress. The current version uses VGG16 with ImageNet weights.
 
