@@ -1,24 +1,24 @@
 from pathlib import Path
 from typing import List, Tuple
-from matplotlib import pyplot as plt
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from matplotlib import pyplot as plt
 from sklearn.metrics import classification_report
 from tensorflow.python.keras.preprocessing.image import DirectoryIterator
 from tqdm import tqdm
-import pandas
 
 
-def setup_directories(dataset_name, nn_name, file_path):
+def setup_directories(dataset_name, file_path, experiment_summary):
     main_dir = file_path.parent.parent
     train_dir = main_dir / "data" / dataset_name
     n_classes = len(folder_names_in_path(train_dir))
-    model_dir = main_dir / "models" / dataset_name / nn_name
+    model_dir = main_dir / "models" / dataset_name / experiment_summary
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    results_dir = main_dir / "results" / dataset_name / nn_name
+    results_dir = main_dir / "results" / dataset_name / experiment_summary
     Path(results_dir).mkdir(parents=True, exist_ok=True)
-    pred_dir = main_dir / "predictions/" / dataset_name / nn_name
+    pred_dir = main_dir / "predictions/" / dataset_name / experiment_summary
     Path(pred_dir).mkdir(parents=True, exist_ok=True)
     return main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes
 
@@ -140,5 +140,5 @@ def save_history_results(train_history, val_history, results_dir):
     plt.savefig(f"{results_dir}/learning_curve.svg")
 
     # Save history, so we can replot/posthoc style
-    pandas.DataFrame({"train_history": train_history, "val_history": val_history, "epoch": range(len(train_history))}).to_csv(results_dir / "train_history.csv", index=False)
+    pd.DataFrame({"train_history": train_history, "val_history": val_history, "epoch": range(len(train_history))}).to_csv(results_dir / "train_history.csv", index=False)
     plt.close()

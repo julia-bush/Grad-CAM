@@ -12,7 +12,7 @@ from utils import setup_directories, show_classification_report, save_classifica
     save_generator_truths, save_history_results
 
 
-def run(dataset_name: str, epochs: int) -> None:
+def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -23,9 +23,7 @@ def run(dataset_name: str, epochs: int) -> None:
 
     img_size = (224, 224, 3)
 
-    nn_name = "VGG_trans"
-
-    main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, nn_name=nn_name, file_path=Path(__file__))
+    main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, file_path=Path(__file__).resolve(), experiment_summary=experiment_summary)
 
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
@@ -98,7 +96,7 @@ def run(dataset_name: str, epochs: int) -> None:
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
+            model_dir / f"{dataset_name}-{experiment_summary}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
         )
     ]
 
@@ -126,5 +124,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", default="multiclass_main", type=str)
     parser.add_argument("--epochs", default=1, type=int)
+    parser.add_argument("--summary", default="VGG16_trans",
+                        help="key to identify experiment when comparing to other runs on the same dataset")
     args = parser.parse_args()
-    run(dataset_name=args.dataset, epochs=args.epochs)
+    run(dataset_name=args.dataset, epochs=args.epochs, experiment_summary=args.summary)

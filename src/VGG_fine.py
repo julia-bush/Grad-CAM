@@ -1,8 +1,6 @@
-from pathlib import Path
 from argparse import ArgumentParser
+from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
@@ -10,10 +8,11 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, save_generator_truths, save_history_results
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, \
+    save_generator_truths, save_history_results
 
 
-def run(dataset_name: str, epochs: int) -> None:
+def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -23,11 +22,10 @@ def run(dataset_name: str, epochs: int) -> None:
 
     img_size = (224, 224, 3)
 
-    nn_name = "VGG_fine"
-
     main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name,
-                                                                                         nn_name=nn_name,
-                                                                                         file_path=Path(__file__))
+                                                                                         file_path=Path(
+                                                                                             __file__).resolve(),
+                                                                                         experiment_summary=experiment_summary)
 
     # get the transfer-learned model to fine-tune
     model_weights = main_dir / "models" / dataset_name / "VGG_trans" / f"VGG_trans-{dataset_name}.hdf5"
@@ -96,7 +94,7 @@ def run(dataset_name: str, epochs: int) -> None:
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"{nn_name}-{dataset_name}.hdf5", verbose=1, save_weights_only=False
+            model_dir / f"{dataset_name}-{experiment_summary}.hdf5", verbose=1, save_weights_only=False
         )
     ]
 
@@ -123,5 +121,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", default="multiclass_main", type=str)
     parser.add_argument("--epochs", default=1, type=int)
+    parser.add_argument("--summary", default="VGG16_trans",
+                        help="key to identify experiment when comparing to other runs on the same dataset")
     args = parser.parse_args()
     run(dataset_name=args.dataset, epochs=args.epochs)
