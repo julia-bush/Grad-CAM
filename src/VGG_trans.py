@@ -1,8 +1,6 @@
-from pathlib import Path
 from argparse import ArgumentParser
+from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.compat.v1.keras.backend import set_session
@@ -10,7 +8,8 @@ from tensorflow.keras import Sequential, optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
-from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, save_generator_truths
+from utils import setup_directories, show_classification_report, save_classification_report, predictions_with_truths, \
+    save_generator_truths, save_history_results
 
 
 def run(dataset_name: str, epochs: int) -> None:
@@ -113,22 +112,8 @@ def run(dataset_name: str, epochs: int) -> None:
         validation_steps=validation_generator.samples // validation_generator.batch_size
     )
 
-    plt.figure(figsize=(8, 8))
-    plt.title("Learning curve")
-    plt.plot(history.history["loss"], label="loss")
-    plt.plot(history.history["val_loss"], label="val_loss")
-    plt.plot(
-        np.argmin(history.history["val_loss"]),
-        np.min(history.history["val_loss"]),
-        marker="x",
-        color="r",
-        label="best model",
-    )
-    plt.xlabel("Epochs")
-    plt.ylabel("log_loss")
-    plt.legend()
-    plt.savefig(f"{results_dir}/learning_curve.png")
-    plt.close()
+    save_history_results(train_history=history.history["loss"], val_history=history.history["val_loss"],
+                         results_dir=results_dir)
 
     predictions, truths = predictions_with_truths(model, validation_generator)
 

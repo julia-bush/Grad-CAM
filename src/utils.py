@@ -1,12 +1,13 @@
 from pathlib import Path
 from typing import List, Tuple
-
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from sklearn.metrics import classification_report
 from tensorflow.python.keras.preprocessing.image import DirectoryIterator
 from tqdm import tqdm
+import pandas
 
 
 def setup_directories(dataset_name, nn_name, file_path):
@@ -118,3 +119,26 @@ def load_generator_truths(
     ).item()
     labels = np.load(f"{pred_dir}/val_labels.npy").tolist()
     return filenames, classes, class_indices, labels
+
+
+def save_history_results(train_history, val_history, results_dir):
+    plt.figure(figsize=(8, 8))
+    plt.title("Learning curve")
+    plt.plot(train_history, label="loss")
+    plt.plot(val_history, label="val_loss")
+    plt.plot(
+        np.argmin(val_history),
+        np.min(val_history),
+        marker="x",
+        color="r",
+        label="best model",
+    )
+    plt.xlabel("Epochs")
+    plt.ylabel("log_loss")
+    plt.legend()
+    plt.savefig(f"{results_dir}/learning_curve.png")
+    plt.savefig(f"{results_dir}/learning_curve.svg")
+
+    # Save history, so we can replot/posthoc style
+    pandas.DataFrame({"train_history": train_history, "val_history": val_history, "epoch": range(len(train_history))}).to_csv(results_dir / "train_history.csv", index=False)
+    plt.close()
