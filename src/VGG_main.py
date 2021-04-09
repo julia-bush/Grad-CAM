@@ -12,7 +12,7 @@ from utils import setup_directories, show_classification_report, save_classifica
     save_generator_truths, save_history_results
 
 
-def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
+def run(dataset_name: str, epochs: int, experiment_summary: str = "", finetune_net: str = "") -> None:
     # GPU config works for both one or two GPUs
     physical_devices = tf.config.experimental.list_physical_devices("GPU")
     assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -25,28 +25,28 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
 
     main_dir, train_dir, model_dir, results_dir, pred_dir, n_classes = setup_directories(dataset_name=dataset_name, file_path=Path(__file__).resolve(), experiment_summary=experiment_summary)
 
+    if finetune_net:
+        weights=None
+        tranianble=True
+        if finetune_net == "default":
+            finetune_net = f"{experiment_summary[:-9]}/model.hdf5"
+    else:
+        weights="imagenet"
+        tranianble = False
+
     vgg_conv = tf.keras.applications.VGG16(
         include_top=False,
-        weights="imagenet",
+        weights=weights,
         input_tensor=None,
         input_shape=img_size,
         pooling=None
     )
-
     print(vgg_conv.summary())
 
     model = Sequential()
 
-    # for layer in vgg_conv.layers[:-4]:
-    #     layer.trainable = False
-    #     model.add(layer)
-    #
-    # for layer in vgg_conv.layers[-4:]:
-    #     layer.trainable = True
-    #     model.add(layer)
-
     for layer in vgg_conv.layers[:]:
-        layer.trainable = False
+        layer.trainable = tranianble
         model.add(layer)
 
     model.add(Flatten())
@@ -55,7 +55,10 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
     model.add(Dropout(0.5))  # increase?
     model.add(Dense(n_classes, activation="softmax"))
 
-    model.summary()
+    print(model.summary())
+
+    if finetune_net:
+        model.load_weights(model_dir.parent / finetune_net)
 
     # Batches of tensor image data
     train_datagen = ImageDataGenerator(rescale=1.0 / 255, validation_split=0.2)
@@ -96,7 +99,7 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
 
     callbacks = [
         ModelCheckpoint(
-            model_dir / f"{dataset_name}-{experiment_summary}.hdf5", verbose=1, save_weights_only=False, save_best_only=True
+            model_dir / "model.hdf5", verbose=1, save_weights_only=False, save_best_only=True
         )
     ]
 
@@ -122,9 +125,14 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "") -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument("--dataset", default="multiclass_main", type=str)
-    parser.add_argument("--epochs", default=1, type=int)
+    parser.add_argument("--dataset", default="six_defects", type=str)
+    parser.add_argument("--epochs", default=3, type=int)
     parser.add_argument("--summary", default="VGG16_trans",
                         help="key to identify experiment when comparing to other runs on the same dataset")
+    parser.add_argument("--finetune", default="default",
+                        help="default: same dataset and experiment_summary; empty to disable finetuning")
     args = parser.parse_args()
-    run(dataset_name=args.dataset, epochs=args.epochs, experiment_summary=args.summary)
+    run(dataset_name=args.dataset,
+        epochs=args.epochs,
+        experiment_summary=args.summary + ("_finetune" if args.finetune else ""),
+        finetune_net=args.finetune)
