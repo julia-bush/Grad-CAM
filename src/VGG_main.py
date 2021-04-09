@@ -50,7 +50,7 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "", finetune_n
         model.add(layer)
 
     model.add(Flatten())
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.5))
     model.add(Dense(128, activation="relu"))
     model.add(Dropout(0.5))  # increase?
     model.add(Dense(n_classes, activation="softmax"))
@@ -125,11 +125,11 @@ def run(dataset_name: str, epochs: int, experiment_summary: str = "", finetune_n
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument("--dataset", default="six_defects", type=str)
-    parser.add_argument("--epochs", default=3, type=int)
-    parser.add_argument("--summary", default="VGG16_trans",
+    parser.add_argument("--dataset", default="multiclass_main", type=str)
+    parser.add_argument("--epochs", default=10, type=int)
+    parser.add_argument("--summary", default="VGG16_trans_double_dropout",
                         help="key to identify experiment when comparing to other runs on the same dataset")
-    parser.add_argument("--finetune", default="default",
+    parser.add_argument("--finetune", default="",
                         help="default: same dataset and experiment_summary; empty to disable finetuning")
     args = parser.parse_args()
     run(dataset_name=args.dataset,
