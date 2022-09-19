@@ -22,3 +22,5 @@ A reasonable 6-class dataset of bridge defects:
 ("MultiClassifer" folder only, ignore the rest)
 
 https://zenodo.org/record/2601506#.YBhsuZdxcuU
+
+This repository is published under the MIT license.
